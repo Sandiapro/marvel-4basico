@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="capBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+  </defs>
+  <!-- Shield Circles Background -->
+  <circle cx="60" cy="60" r="56" fill="#DC2626" stroke="#B91C1C" stroke-width="2"/>
+  <circle cx="60" cy="60" r="46" fill="#FFFFFF"/>
+  <circle cx="60" cy="60" r="36" fill="#DC2626"/>
+  <circle cx="60" cy="60" r="26" fill="url(#capBlue)"/>
+  <!-- Helmet -->
+  <path d="M35 55 C35 32 85 32 85 55 L85 70 C85 82 72 88 60 88 C48 88 35 82 35 70 Z" fill="url(#capBlue)" stroke="#1E3A8A" stroke-width="2"/>
+  <!-- The "A" / "×" emblem on forehead -->
+  <text x="60" y="46" font-family="'Fredoka', Arial, sans-serif" font-size="18" font-weight="900" fill="#FFFFFF" text-anchor="middle">A</text>
+  <!-- Wings on ears -->
+  <path d="M33 46 L24 40 L28 50 Z" fill="#FFFFFF"/>
+  <path d="M87 46 L96 40 L92 50 Z" fill="#FFFFFF"/>
+  <!-- Eyes Cutouts -->
+  <circle cx="48" cy="60" r="4.5" fill="#FED7AA"/>
+  <circle cx="72" cy="60" r="4.5" fill="#FED7AA"/>
+  <circle cx="48" cy="60" r="2" fill="#1E293B"/>
+  <circle cx="72" cy="60" r="2" fill="#1E293B"/>
+  <!-- Chin strap & smile -->
+  <path d="M50 78 Q60 84 70 78" fill="none" stroke="#78350F" stroke-width="2" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Mis Tablas 🌟 4° Básico</title>
+  <!-- Google Fonts: Fredoka & Nunito -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <!-- Hoja de Estilos del Sistema -->
+  <link rel="stylesheet" href="CSS/style.css">
+</head>
+<body>
+
+  <!-- Canvas para Confeti de Celebración -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- ========================================================================
+       BARRA SUPERIOR (HEADER DEL SISTEMA)
+       ======================================================================== -->
+  <header class="top-header">
+    <div class="header-container">
+      <!-- Logo y Título -->
+      <div class="brand-section" id="brandSection" title="Ir al menú principal">
+        <div class="brand-logo-icon">×</div>
+        <div class="brand-text">
+          <h1>MIS TABLAS</h1>
+          <span>4° BÁSICO • MATEMÁTICA</span>
+        </div>
+      </div>
+
+      <!-- Estado del Estudiante -->
+      <div class="student-status-bar">
+        <div class="student-card-mini">
+          <div class="student-avatar-frame">
+            <img id="hudAvatarImg" src="IMAGEN/avatar_spiderman.svg" alt="Avatar">
+          </div>
+          <div class="student-meta">
+            <span class="student-name" id="hudNombre">Estudiante</span>
+            <span class="student-level-tag" id="hudNivel">Nivel 1 • 4° Básico</span>
+          </div>
+        </div>
+
+        <div class="stat-pill stars" title="Estrellas acumuladas">
+          <span>⭐</span>
+          <span id="hudEstrellas">0</span>
+        </div>
+
+        <div class="stat-pill xp" title="Puntos de experiencia">
+          <span>⚡</span>
+          <span id="hudXP">0 XP</span>
+        </div>
+      </div>
+
+      <!-- Acciones Rápidas -->
+      <div class="header-actions">
+        <button class="btn-icon-round" id="btnToggleSound" title="Activar / Desactivar Sonido">
+          <span id="soundIcon">🔊</span>
+        </button>
+        <button class="btn-icon-round" id="btnExitUser" title="Cambiar de Estudiante o Avatar">
+          <span>🚪</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       NAVEGACIÓN POR PESTAÑAS (NAVBAR)
+       ======================================================================== -->
+  <nav class="main-nav-wrapper">
+    <div class="nav-container">
+      <button class="nav-tab-btn active" data-view="menu">
+        <span class="tab-icon">🏠</span>
+        <span>Menú Principal</span>
+      </button>
+      <button class="nav-tab-btn" data-view="aprender">
+        <span class="tab-icon">📘</span>
+        <span>Aprender Tablas</span>
+      </button>
+      <button class="nav-tab-btn" data-view="juegos">
+        <span class="tab-icon">🎮</span>
+        <span>Juegos y Desafíos</span>
+      </button>
+      <button class="nav-tab-btn" data-view="progreso">
+        <span class="tab-icon">📊</span>
+        <span>Mi Progreso y Medallas</span>
+      </button>
+      <button class="nav-tab-btn badge-simce" data-view="simce">
+        <span class="tab-icon">📝</span>
+        <span>Ensayo SIMCE</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========================================================================
+       CONTENIDO PRINCIPAL DINÁMICO (VISTAS)
+       ======================================================================== -->
+  <main class="main-content">
+
+    <!-- ----------------------------------------------------------------------
+         VISTA 1: MENÚ PRINCIPAL
+         ---------------------------------------------------------------------- -->
+    <section class="app-view active" id="view-menu">
+      <!-- Hero Banner -->
+      <div class="welcome-hero-banner">
+        <div class="welcome-info">
+          <h2>¡Hola, <span id="heroNombreEstudiante">Amigo</span>! 👋</h2>
+          <p>Bienvenido a tu aventura de tablas de multiplicar. Explora grupos y patrones matemáticos, supera entretenidos minijuegos y prepárate con el ensayo oficial tipo SIMCE.</p>
+          <div class="hero-stats-row">
+            <div class="hero-stat-box">
+              Tablas Dominadas: <strong id="heroTablasDominadasCount">0 / 9</strong>
+            </div>
+            <div class="hero-stat-box">
+              Desafío Recomendado: <strong style="color:#A7F3D0;">Ensayo SIMCE 4° Básico</strong>
+            </div>
+          </div>
+        </div>
+        <div>
+          <button class="btn-launch-quiz" id="btnHeroSimce" style="background:#F59E0B; box-shadow:0 4px 0 #D97706; font-size:16px;">
+            <span>Hacer Ensayo SIMCE</span>
+            <span>📝</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tarjetas Principales del Menú -->
+      <div class="menu-grid">
+        <!-- Tarjeta 1: Aprender Tablas -->
+        <div class="menu-card" data-target="aprender" style="--card-accent:#4F46E5; --card-accent-bg:#EEF2FF;">
+          <div class="menu-card-top">
+            <div class="menu-icon-circle">📘</div>
+            <span class="menu-badge">Del 2 al 10</span>
+          </div>
+          <div>
+            <h3 class="menu-card-title">Aprender Tablas</h3>
+            <p class="menu-card-desc">Visualiza multiplicaciones con grupos de objetos, descubre patrones secretos y comprende la suma iterada.</p>
+          </div>
+          <div class="menu-card-action">
+            <span>Explorar tablas</span>
+            <span>➔</span>
+          </div>
+        </div>
+
+        <!-- Tarjeta 2: Juegos y Desafíos -->
+        <div class="menu-card" data-target="juegos" style="--card-accent:#EC4899; --card-accent-bg:#FDF2F8;">
+          <div class="menu-card-top">
+            <div class="menu-icon-circle">🎮</div>
+            <span class="menu-badge">5 Modos Divertidos</span>
+          </div>
+          <div>
+            <h3 class="menu-card-title">Juegos y Desafíos</h3>
+            <p class="menu-card-desc">Memoria de cartas, burbujas relámpago, detective matemático, constructor visual y desafío contra el reloj.</p>
+          </div>
+          <div class="menu-card-action">
+            <span>¡A jugar ahora!</span>
+            <span>➔</span>
+          </div>
+        </div>
+
+        <!-- Tarjeta 3: Progreso y Medallas -->
+        <div class="menu-card" data-target="progreso" style="--card-accent:#10B981; --card-accent-bg:#ECFDF5;">
+          <div class="menu-card-top">
+            <div class="menu-icon-circle">🏆</div>
+            <span class="menu-badge">Logros & Medallas</span>
+          </div>
+          <div>
+            <h3 class="menu-card-title">Mi Progreso</h3>
+            <p class="menu-card-desc">Revisa tus estadísticas, el porcentaje de maestría de cada tabla y desbloquea insignias especiales.</p>
+          </div>
+          <div class="menu-card-action">
+            <span>Ver mis logros</span>
+            <span>➔</span>
+          </div>
+        </div>
+
+        <!-- Tarjeta 4: Ensayo SIMCE -->
+        <div class="menu-card" data-target="simce" style="--card-accent:#F59E0B; --card-accent-bg:#FFFBEB;">
+          <div class="menu-card-top">
+            <div class="menu-icon-circle">📝</div>
+            <span class="menu-badge">Simulador Oficial</span>
+          </div>
+          <div>
+            <h3 class="menu-card-title">Ensayo SIMCE</h3>
+            <p class="menu-card-desc">10 preguntas contextualizadas en situaciones escolares y cotidianas, con cálculo de puntaje y retroalimentación.</p>
+          </div>
+          <div class="menu-card-action">
+            <span>Rendir ensayo</span>
+            <span>➔</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Camino de Avance de las Tablas (2 al 10) -->
+      <div class="path-progress-section">
+        <div class="path-section-header">
+          <h3 style="font-size: 20px;">🗺️ Tu Camino de Dominio Matemático</h3>
+          <span style="font-size: 13px; font-weight:800; color:var(--text-muted);">Toca cualquier tabla para practicarla</span>
+        </div>
+        <div class="path-pills-row" id="homePathPillsRow">
+          <!-- Generado dinámicamente con JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------------------
+         VISTA 2: APRENDER TABLAS (CONCRETO - PICTÓRICO - SIMBÓLICO)
+         ---------------------------------------------------------------------- -->
+    <section class="app-view" id="view-aprender">
+      <!-- Selector Horizontal de Tablas -->
+      <div class="table-learning-header">
+        <h2 style="font-size: 28px; margin-bottom: 6px;">📘 Taller Interactivo de Multiplicación</h2>
+        <p style="color:var(--text-muted); font-weight:700;">Selecciona una tabla para explorar sus grupos, patrones y secretos.</p>
+      </div>
+
+      <div class="table-selector-strip" id="tableSelectorStrip">
+        <!-- Generado dinámicamente con JS (Tabla del 2 al 10) -->
+      </div>
+
+      <!-- Panel Dividido: Visualización Concreta vs Patrones y Práctica -->
+      <div class="table-view-grid">
+        <!-- Columna Izquierda: Visualizador Pictórico de Grupos -->
+        <div class="card-visual-learning">
+          <div class="visual-controls-bar">
+            <div class="math-expression-big" id="mathExpressionDisplay">2 × 3 = 6</div>
+            <div class="stepper-btn-group">
+              <button class="btn-stepper" id="btnStepDown" title="Disminuir multiplicador">−</button>
+              <button class="btn-stepper" id="btnStepUp" title="Aumentar multiplicador">+</button>
+              <button class="btn-stepper" id="btnToggleCommutative" title="Cambiar orden (Propiedad Conmutativa)" style="width: auto; padding: 0 12px; font-size: 13px; border-radius: var(--radius-full);">
+                🔄 Invertir
+              </button>
+            </div>
+          </div>
+
+          <!-- Escenario Pictórico de Canastas / Objetos -->
+          <div class="groups-stage-box" id="groupsStageBox">
+            <!-- Canastas con objetos SVG / Emojis se insertan dinámicamente -->
+          </div>
+
+          <!-- Representación Simbólica (Suma Iterada) -->
+          <div class="iterated-sum-box" id="iteratedSumDisplay">
+            <strong>Suma iterada:</strong> 2 + 2 + 2 = 6
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Patrones, Trucos y Desafío Rápido -->
+        <div class="card-table-practice">
+          <div class="tip-banner-card">
+            <div class="tip-banner-header">
+              <span>✨</span>
+              <span id="tablaTituloActivo">Tabla del 2</span>
+            </div>
+            <p class="tip-banner-text" id="tablaPatronActivo">
+              Todos los resultados son números pares. ¡Multiplicar por 2 es calcular el doble!
+            </p>
+            <div style="margin-top: 10px; font-size: 13px; font-weight: 800; color: #1E40AF;" id="tablaTrucoActivo">
+              💡 Truco Mágico: Suma el número consigo mismo.
+            </div>
+          </div>
+
+          <!-- Lista Rápida 1 a 10 de la Tabla -->
+          <h4 style="font-size: 16px; margin-bottom: 8px;">Valores de la Tabla (toca para ver su grupo):</h4>
+          <div class="table-quick-grid" id="tableQuickGrid">
+            <!-- Operaciones del 1 al 10 generadas por JS -->
+          </div>
+
+          <!-- Botones de Acción -->
+          <div style="display: flex; gap: 10px; margin-top: auto;">
+            <button type="button" class="btn-stepper" id="btnPistaHeroica" style="width:auto; padding:0 14px; border-radius:var(--radius-md); font-size:14px;" title="Pedir pista heroica">
+              🛡️ Pista Heroica
+            </button>
+            <button type="button" class="btn-launch-quiz" id="btnLaunchTableQuiz">
+              <span>🎯 Desafío Rápido</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------------------
+         VISTA 3: JUEGOS Y DESAFÍOS (MINIJUEGOS DINÁMICOS)
+         ---------------------------------------------------------------------- -->
+    <section class="app-view" id="view-juegos">
+      <div class="games-hub-header">
+        <h2>🎮 Sala de Juegos y Desafíos Matemáticos</h2>
+        <p>Aprende jugando: no memorices de forma monótona, ¡diviértete superando cada nivel!</p>
+      </div>
+
+      <!-- Selección de Juegos -->
+      <div class="games-selection-grid" id="gamesSelectionList">
+        <!-- Juego 1: Memoria -->
+        <div class="game-select-card" data-game="memoria">
+          <div class="game-icon-large" style="background:#EEF2FF; color:#4F46E5;">🎴</div>
+          <h3>Memoria Matemática</h3>
+          <p>Encuentra las parejas volteando cartas que unan la multiplicación con su resultado correcto.</p>
+          <button class="btn-play-mini">Jugar Memoria</button>
+        </div>
+
+        <!-- Juego 2: Burbujas -->
+        <div class="game-select-card" data-game="burbujas">
+          <div class="game-icon-large" style="background:#ECFEFF; color:#06B6D4;">🎈</div>
+          <h3>Atrapa el Resultado</h3>
+          <p>Explota la burbuja flotante que contenga el resultado exacto antes de que se acabe el tiempo.</p>
+          <button class="btn-play-mini" style="background:#06B6D4;">Jugar Burbujas</button>
+        </div>
+
+        <!-- Juego 3: Constructor -->
+        <div class="game-select-card" data-game="constructor">
+          <div class="game-icon-large" style="background:#FFFBEB; color:#F59E0B;">🧱</div>
+          <h3>Construye la Multiplicación</h3>
+          <p>Ajusta filas y columnas para armar la cantidad pedida por los clientes del almacén.</p>
+          <button class="btn-play-mini" style="background:#F59E0B;">Construir</button>
+        </div>
+
+        <!-- Juego 4: Detective -->
+        <div class="game-select-card" data-game="detective">
+          <div class="game-icon-large" style="background:#FDF2F8; color:#EC4899;">🕵️</div>
+          <h3>Detective Matemático</h3>
+          <p>Sigue las pistas de los héroes y agentes secretos para descubrir cuál de los números es el culpable.</p>
+          <button class="btn-play-mini" style="background:#EC4899;">Ser Detective</button>
+        </div>
+
+        <!-- Juego 5: Reloj -->
+        <div class="game-select-card" data-game="reloj">
+          <div class="game-icon-large" style="background:#F0FDF4; color:#10B981;">⚡</div>
+          <h3>Desafío 60 Segundos</h3>
+          <p>Responde la mayor cantidad de tablas en un minuto y acumula rachas de fuego combo x3.</p>
+          <button class="btn-play-mini" style="background:#10B981;">Iniciar Reloj</button>
+        </div>
+      </div>
+
+      <!-- Zona Activa de Juego (Arena) -->
+      <div class="game-active-arena" id="gameActiveArena">
+        <div class="game-arena-toolbar">
+          <button class="btn-back-games" id="btnBackToGamesList">
+            <span>⬅</span>
+            <span>Volver a la Lista de Juegos</span>
+          </button>
+          <div class="game-hud-stats" id="activeGameHud">
+            <!-- HUD dinámico del juego -->
+          </div>
+        </div>
+
+        <!-- Subpantalla 1: Memoria -->
+        <div class="game-specific-container" id="arenaMemoria">
+          <div style="text-align:center; margin-bottom:16px;">
+            <span style="font-weight:800; color:var(--text-muted);">Movimientos realizados: <strong id="memoryMovesCount" style="color:var(--primary);">0</strong></span>
+          </div>
+          <div class="memory-board" id="memoryBoard"></div>
+        </div>
+
+        <!-- Subpantalla 2: Burbujas -->
+        <div class="game-specific-container" id="arenaBurbujas">
+          <div style="display:flex; justify-content:space-between; margin-bottom:16px; font-weight:800;">
+            <span>Puntaje: <strong id="bubbleScore" style="color:#0284C7; font-size:20px;">0</strong></span>
+            <span>Tiempo: <strong id="bubbleTimer" style="color:#EF4444; font-size:20px;">30s</strong></span>
+          </div>
+          <div class="bubble-game-stage">
+            <div class="target-multiplication-bubble" id="bubbleTargetText">6 × 7 = ?</div>
+            <div class="bubbles-container" id="bubblesContainer"></div>
+          </div>
+        </div>
+
+        <!-- Subpantalla 3: Constructor -->
+        <div class="game-specific-container" id="arenaConstructor">
+          <div class="builder-mission-card">
+            <h3 style="font-size:20px; color:#B45309; margin-bottom:6px;">📦 Misión de Organización</h3>
+            <p id="builderMissionText" style="font-weight:700; color:#78350F; font-size:16px;">Organiza 24 objetos en filas y columnas iguales.</p>
+            <div style="font-size:24px; font-weight:900; color:#B45309; margin-top:8px;">Meta: <span id="builderTargetVal">24</span> objetos</div>
+          </div>
+
+          <div class="builder-controls">
+            <div class="builder-stepper">
+              <div class="builder-stepper-title">Filas (Horizontal)</div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <button class="btn-stepper" id="btnRowsDown">−</button>
+                <span id="builderRowsVal" style="font-family:'Fredoka'; font-size:24px; font-weight:700; min-width:30px;">3</span>
+                <button class="btn-stepper" id="btnRowsUp">+</button>
+              </div>
+            </div>
+
+            <div class="builder-stepper">
+              <div class="builder-stepper-title">Columnas (Vertical)</div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <button class="btn-stepper" id="btnColsDown">−</button>
+                <span id="builderColsVal" style="font-family:'Fredoka'; font-size:24px; font-weight:700; min-width:30px;">4</span>
+                <button class="btn-stepper" id="btnColsUp">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align:center; font-family:'Fredoka'; font-size:24px; font-weight:700; color:var(--primary); margin-bottom:14px;" id="builderCurrentCalc">
+            3 × 4 = 12
+          </div>
+
+          <div class="builder-grid-display" id="builderGridDisplay"></div>
+
+          <button class="btn-launch-quiz" id="btnVerificarConstructor" style="max-width:320px; margin:20px auto 0;">
+            <span>Verificar Construcción</span>
+            <span>✓</span>
+          </button>
+        </div>
+
+        <!-- Subpantalla 4: Detective -->
+        <div class="game-specific-container" id="arenaDetective">
+          <div class="detective-wrapper">
+            <div class="detective-badge-header">
+              <span style="font-size:38px;">🕵️</span>
+              <div>
+                <h3 style="font-size:20px; color:#92400E;">Caso de Investigación: El Número Oculto</h3>
+                <p style="font-size:13px; font-weight:700; color:#78350F;">Lee cuidadosamente cada una de las pistas y descubre al número sospechoso.</p>
+              </div>
+            </div>
+
+            <div class="clues-list" id="detectiveCluesList"></div>
+
+            <h4 style="font-size:18px; margin-bottom:12px; text-align:center;">¿Quién es el número culpable?</h4>
+            <div class="detective-options-grid" id="detectiveSuspectsGrid"></div>
+          </div>
+        </div>
+
+        <!-- Subpantalla 5: Reloj -->
+        <div class="game-specific-container" id="arenaReloj">
+          <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:800; font-size:18px;">
+            <span>Aciertos: <strong id="speedScore" style="color:var(--primary); font-size:26px;">0</strong></span>
+            <span>Racha Combo: <strong id="speedStreak" style="color:#EA580C; font-size:26px;">x1</strong></span>
+            <span>Tiempo: <strong id="speedTimer" style="color:#EF4444; font-size:26px;">60s</strong></span>
+          </div>
+
+          <div style="text-align:center; margin:30px 0;">
+            <div style="font-family:'Fredoka'; font-size:52px; font-weight:700; color:var(--text-dark);" id="speedOperationText">
+              7 × 8 = ?
+            </div>
+          </div>
+
+          <div class="detective-options-grid" id="speedOptionsGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------------------
+         VISTA 4: MI PROGRESO Y LOGROS
+         ---------------------------------------------------------------------- -->
+    <section class="app-view" id="view-progreso">
+      <div style="margin-bottom:24px;">
+        <h2 style="font-size:28px; margin-bottom:6px;">📊 Tu Progreso Matemático</h2>
+        <p style="color:var(--text-muted); font-weight:700;">Observa tus avances, tu nivel de jugador y las medallas que has ganado con tu esfuerzo.</p>
+      </div>
+
+      <!-- Tarjetas Métricas -->
+      <div class="progress-summary-grid">
+        <div class="progress-metric-card">
+          <div class="metric-icon-box" style="background:#F0FDF4; color:#16A34A;">⚡</div>
+          <div>
+            <div class="metric-value" id="progresoTotalXP">120 XP</div>
+            <div class="metric-label">Experiencia Total</div>
+          </div>
+        </div>
+
+        <div class="progress-metric-card">
+          <div class="metric-icon-box" style="background:#FFFBEB; color:#D97706;">⭐</div>
+          <div>
+            <div class="metric-value" id="progresoTotalEstrellas">15</div>
+            <div class="metric-label">Estrellas Acumuladas</div>
+          </div>
+        </div>
+
+        <div class="progress-metric-card">
+          <div class="metric-icon-box" style="background:#EEF2FF; color:#4F46E5;">🎓</div>
+          <div>
+            <div class="metric-value" id="progresoNivelJugador">Nivel 1</div>
+            <div class="metric-label">Rango del Estudiante</div>
+          </div>
+        </div>
+
+        <div class="progress-metric-card">
+          <div class="metric-icon-box" style="background:#FDF2F8; color:#DB2777;">📘</div>
+          <div>
+            <div class="metric-value" id="progresoTablasListas">0 / 9</div>
+            <div class="metric-label">Tablas Dominadas</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vitrina de Logros e Insignias -->
+      <div class="achievements-section">
+        <h3 style="font-size:22px;">🏆 Vitrina de Medallas y Logros</h3>
+        <p style="font-size:14px; font-weight:700; color:var(--text-muted);">Completa actividades y desafíos para iluminar todas tus insignias doradas.</p>
+        
+        <div class="achievements-grid" id="achievementsGrid">
+          <!-- Generado dinámicamente con JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------------------
+         VISTA 5: ENSAYO MATEMÁTICO TIPO SIMCE 4° BÁSICO
+         ---------------------------------------------------------------------- -->
+    <section class="app-view" id="view-simce">
+      <!-- Banner Oficial SIMCE -->
+      <div class="simce-header-banner">
+        <div class="simce-header-info">
+          <h2><span>🇨🇱</span> Ensayo Matemático Tipo SIMCE • 4° Básico</h2>
+          <p>Situaciones contextualizadas de la vida cotidiana para evaluar la multiplicación y resolución de problemas.</p>
+        </div>
+        <div class="simce-counter-pill" id="simceCounterPill">
+          0 de 10 respondidas
+        </div>
+      </div>
+
+      <!-- Contenedor del Test (Sidebar + Pregunta) -->
+      <div class="simce-layout-grid" id="simceTestContainer">
+        <!-- Sidebar Izquierdo: Lista de Preguntas 1 a 10 -->
+        <aside class="simce-sidebar">
+          <div class="simce-sidebar-title">
+            <strong>Preguntas</strong>
+            <span style="font-size:12px; color:var(--text-muted);">10 en total</span>
+          </div>
+
+          <div class="simce-sidebar-grid" id="simceSidebarGrid">
+            <!-- Botones P1 a P10 generados por JS -->
+          </div>
+
+          <div class="simce-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#ECFDF5; border:1px solid #10B981;"></div>
+              <span>Respondida</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#F8FAFC; border:1px solid #CBD5E1;"></div>
+              <span>Pendiente</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#EFF6FF; border:1px solid #3B82F6;"></div>
+              <span>Pregunta Actual</span>
+            </div>
+          </div>
+
+          <button class="btn-submit-simce" id="btnFinalizarSimce">
+            <span>Entregar Ensayo 🏁</span>
+          </button>
+        </aside>
+
+        <!-- Área de la Pregunta Activa -->
+        <div class="simce-question-card">
+          <div class="question-header-row">
+            <span class="question-context-badge" id="simceContextBadge">Contexto</span>
+            <span class="question-number-badge" id="simceQuestionBadge">Pregunta 1 de 10</span>
+          </div>
+
+          <div class="question-text" id="simceQuestionText">
+            Enunciado de la pregunta...
+          </div>
+
+          <!-- Diagrama Visual Contextual en SVG -->
+          <div class="simce-diagram-box" id="simceDiagramBox"></div>
+
+          <!-- Alternativas A, B, C, D -->
+          <div class="options-list" id="simceOptionsList"></div>
+
+          <!-- Controles de Navegación -->
+          <div class="simce-bottom-nav">
+            <button class="btn-nav-step" id="btnSimcePrev">
+              <span>⬅</span>
+              <span>Anterior</span>
+            </button>
+            <span style="font-size:13px; font-weight:800; color:var(--text-muted);">Selecciona una alternativa para guardar</span>
+            <button class="btn-nav-step" id="btnSimceNext">
+              <span>Siguiente</span>
+              <span>➡</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pantalla de Resultados y Retroalimentación SIMCE -->
+      <div class="simce-results-card" id="simceResultsCard">
+        <div class="results-header-box">
+          <div class="trophy-result-icon">
+            <img src="IMAGEN/trofeo.svg" alt="Trofeo">
+          </div>
+          <h2 style="font-size:32px; margin-bottom:8px;">Resultado del Ensayo SIMCE</h2>
+          <div class="simce-score-display" id="simceScoreValue">290 pts</div>
+          <div class="simce-level-badge adecuado" id="simceLevelBadge">Nivel Adecuado 🌟</div>
+          <p style="max-width:600px; margin:0 auto; font-size:16px; font-weight:700; color:var(--text-body);" id="simceFeedbackText">
+            ¡Felicitaciones! Demuestras un excelente dominio de las multiplicaciones en situaciones cotidianas.
+          </p>
+        </div>
+
+        <div class="results-stats-row">
+          <div class="result-stat-chip">
+            <strong id="simceCorrectasCount" style="color:#059669;">8 / 10</strong>
+            <span>Preguntas Correctas</span>
+          </div>
+          <div class="result-stat-chip">
+            <strong id="simcePorcentajeVal" style="color:var(--primary);">80%</strong>
+            <span>Porcentaje de Logro</span>
+          </div>
+        </div>
+
+        <!-- Desglose Pregunta por Pregunta con Retroalimentación Pedagógica -->
+        <h3 style="font-size:22px; margin-bottom:16px;">🔍 Retroalimentación Detallada Pregunta por Pregunta</h3>
+        <div class="review-questions-list" id="simceReviewList">
+          <!-- Detalle de cada pregunta generado por JS -->
+        </div>
+
+        <div style="display:flex; justify-content:center; gap:16px; margin-top:24px;">
+          <button class="btn-nav-step" id="btnReintentarSimce" style="background:#F1F5F9;">
+            <span>🔄 Reintentar Ensayo</span>
+          </button>
+          <button class="btn-launch-quiz" id="btnVolverMenuDesdeSimce" style="max-width:240px; margin:0;">
+            <span>🏠 Volver al Menú</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================
+       MODAL DE CELEBRACIONES Y RETROALIMENTACIÓN
+       ======================================================================== -->
+  <div class="modal-overlay" id="modalCelebracion">
+    <div class="modal-card">
+      <div class="modal-icon-big">🌟</div>
+      <h3 id="modalCelebracionTitulo">¡Felicitaciones!</h3>
+      <div id="modalCelebracionBody" style="font-weight:700; font-size:15px; color:var(--text-body); margin-bottom:24px; line-height:1.5;">
+        Has completado el desafío con éxito.
+      </div>
+      <button class="btn-modal-close" id="btnCerrarModalCelebracion">¡Continuar!</button>
+    </div>
+  </div>
+
+  <!-- Scripts en Orden Correcto -->
+  <script src="JS/sound.js"></script>
+  <script src="JS/data.js"></script>
+  <script src="JS/app.js"></script>
+</body>
+</html>

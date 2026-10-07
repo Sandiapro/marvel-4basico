@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <!-- Background Purple/Green -->
+  <circle cx="60" cy="60" r="56" fill="#581C87" stroke="#22C55E" stroke-width="4"/>
+  <!-- Hulk Strong Head -->
+  <rect x="32" y="38" width="56" height="54" rx="16" fill="#22C55E" stroke="#15803D" stroke-width="2"/>
+  <!-- Black Hair Messy -->
+  <path d="M28 42 Q40 22 60 26 Q80 22 92 42 Q80 34 60 36 Q40 34 28 42 Z" fill="#0F172A"/>
+  <!-- Determined Eyebrows -->
+  <polygon points="40,50 56,54 56,50" fill="#14532D"/>
+  <polygon points="80,50 64,54 64,50" fill="#14532D"/>
+  <!-- Eyes -->
+  <circle cx="48" cy="58" r="4.5" fill="#FFFFFF"/>
+  <circle cx="72" cy="58" r="4.5" fill="#FFFFFF"/>
+  <circle cx="48" cy="58" r="2.5" fill="#14532D"/>
+  <circle cx="72" cy="58" r="2.5" fill="#14532D"/>
+  <!-- Friendly Big Smile Teeth -->
+  <path d="M44 76 Q60 88 76 76 Z" fill="#FFFFFF" stroke="#15803D" stroke-width="2"/>
+  <line x1="52" y1="78" x2="52" y2="84" stroke="#CBD5E1"/>
+  <line x1="60" y1="78" x2="60" y2="85" stroke="#CBD5E1"/>
+  <line x1="68" y1="78" x2="68" y2="84" stroke="#CBD5E1"/>
+  <!-- Math Muscle Badge -->
+  <circle cx="60" cy="100" r="8" fill="#A855F7" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="60" y="104" font-size="12" font-weight="900" fill="#FFFFFF" text-anchor="middle">×</text>
+</svg>

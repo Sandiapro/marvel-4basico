@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="50%" stop-color="#EAB308" />
+      <stop offset="100%" stop-color="#CA8A04" />
+    </linearGradient>
+  </defs>
+  <!-- Base -->
+  <rect x="36" y="94" width="48" height="14" rx="4" fill="#78350F" />
+  <rect x="44" y="86" width="32" height="10" rx="2" fill="#B45309" />
+  <!-- Stem -->
+  <path d="M52 68 L52 86 L68 86 L68 68 Z" fill="url(#goldGrad)" />
+  <!-- Cup handles -->
+  <path d="M34 32 C18 32 18 58 36 60" fill="none" stroke="#CA8A04" stroke-width="6" stroke-linecap="round"/>
+  <path d="M86 32 C102 32 102 58 84 60" fill="none" stroke="#CA8A04" stroke-width="6" stroke-linecap="round"/>
+  <!-- Cup body -->
+  <path d="M32 24 L88 24 C88 24 86 68 60 70 C34 68 32 24 32 24 Z" fill="url(#goldGrad)" stroke="#B45309" stroke-width="2"/>
+  <!-- Star on Cup -->
+  <polygon points="60,34 63,42 71,43 65,48 67,56 60,51 53,56 55,48 49,43 57,42" fill="#FFFFFF" opacity="0.9"/>
+  <!-- Sparkles -->
+  <polygon points="26,16 28,21 33,21 29,24 30,29 26,26 22,29 23,24 19,21 24,21" fill="#FDE047"/>
+  <polygon points="96,16 98,21 103,21 99,24 100,29 96,26 92,29 93,24 89,21 94,21" fill="#FDE047"/>
+</svg>

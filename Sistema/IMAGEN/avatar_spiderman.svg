@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="spideyRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF4444" />
+      <stop offset="100%" stop-color="#B91C1C" />
+    </linearGradient>
+  </defs>
+  <!-- Background Circle Marvel Blue -->
+  <circle cx="60" cy="60" r="56" fill="#1E3A8A" stroke="#EF4444" stroke-width="4"/>
+  <!-- Spidey Mask -->
+  <ellipse cx="60" cy="60" rx="38" ry="44" fill="url(#spideyRed)"/>
+  <!-- Web lines -->
+  <line x1="60" y1="16" x2="60" y2="104" stroke="#7F1D1D" stroke-width="2"/>
+  <line x1="22" y1="60" x2="98" y2="60" stroke="#7F1D1D" stroke-width="2"/>
+  <line x1="32" y1="32" x2="88" y2="88" stroke="#7F1D1D" stroke-width="2"/>
+  <line x1="88" y1="32" x2="32" y2="88" stroke="#7F1D1D" stroke-width="2"/>
+  <ellipse cx="60" cy="60" rx="16" ry="18" fill="none" stroke="#7F1D1D" stroke-width="2"/>
+  <ellipse cx="60" cy="60" rx="28" ry="32" fill="none" stroke="#7F1D1D" stroke-width="2"/>
+  <!-- Big Spidey Eyes -->
+  <path d="M36 50 Q48 44 56 60 Q48 68 36 62 Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="4"/>
+  <path d="M84 50 Q72 44 64 60 Q72 68 84 62 Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="4"/>
+  <!-- Math Sparkle badge -->
+  <circle cx="60" cy="18" r="6" fill="#FACC15"/>
+  <text x="60" y="21" font-size="9" font-weight="900" fill="#78350F" text-anchor="middle">×</text>
+</svg>

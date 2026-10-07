@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Tablas 🦸‍♂️ Aventura Marvel & Minecraft 4° Básico</title>
+  <!-- Google Fonts: Fredoka & Nunito -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --marvel-red: #E62429;
+      --marvel-dark: #121212;
+      --marvel-gold: #FACC15;
+      --minecraft-green: #22C55E;
+      --minecraft-dark: #14532D;
+      --minecraft-diamond: #38BDF8;
+      --bg-gradient: linear-gradient(135deg, #0F172A 0%, #1E1B4B 40%, #1E3A8A 75%, #047857 100%);
+      --card-bg: rgba(255, 255, 255, 0.97);
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --radius-lg: 26px;
+      --radius-md: 16px;
+      --shadow-fun: 0 16px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Canvas para Serpentinas y Brillos */
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* Floating Marvel & Minecraft Background Particles */
+    .hero-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .hero-symbol {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.22);
+      font-family: 'Fredoka', cursive;
+      font-weight: 700;
+      user-select: none;
+      animation: floatHero 10s infinite linear;
+    }
+
+    @keyframes floatHero {
+      0% {
+        transform: translateY(105vh) rotate(0deg) scale(0.9);
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.4;
+      }
+      80% {
+        opacity: 0.4;
+      }
+      100% {
+        transform: translateY(-10vh) rotate(360deg) scale(1.15);
+        opacity: 0;
+      }
+    }
+
+    /* Main Login Container */
+    .login-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 720px;
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-fun);
+      padding: 36px 32px;
+      border: 4px solid #FACC15;
+      backdrop-filter: blur(12px);
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.85); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Header Logo Marvel & Minecraft Style */
+    .header-logo {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .marvel-badge-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--marvel-red);
+      color: #FFFFFF;
+      padding: 6px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(230, 36, 41, 0.4);
+      margin-bottom: 12px;
+    }
+
+    .marvel-badge-title span {
+      font-family: 'Fredoka', cursive;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .minecraft-badge-pill {
+      background: #16A34A;
+      color: #FFFFFF;
+      padding: 2px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 900;
+      border: 1px solid #86EFAC;
+      letter-spacing: 0.5px;
+    }
+
+    .main-title {
+      font-family: 'Fredoka', cursive;
+      font-size: 38px;
+      font-weight: 900;
+      color: #1E1B4B;
+      line-height: 1.15;
+    }
+
+    .main-title .highlight-marvel {
+      background: linear-gradient(90deg, #DC2626, #F59E0B);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 15px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    /* Saved Profile Quick Resume */
+    .saved-profile-bar {
+      display: none;
+      background: #F0FDF4;
+      border: 2px dashed #4ADE80;
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+      margin-bottom: 18px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .saved-profile-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .saved-avatar-mini {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #DCFCE7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      border: 2px solid #16A34A;
+      overflow: hidden;
+    }
+
+    .saved-avatar-mini img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .btn-quick-continue {
+      background: linear-gradient(135deg, #16A34A, #15803D);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 9px 18px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 14px;
+      box-shadow: 0 4px 0 #14532D;
+      transition: all 0.15s ease;
+    }
+
+    .btn-quick-continue:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 #14532D;
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-family: 'Fredoka', cursive;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .form-label .required {
+      color: #DC2626;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+    }
+
+    .input-text {
+      width: 100%;
+      padding: 13px 18px;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-main);
+      background: #F8FAFC;
+      border: 3px solid #CBD5E1;
+      border-radius: var(--radius-md);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .input-text:focus {
+      background: #FFFFFF;
+      border-color: #2563EB;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+    }
+
+    .select-course {
+      width: 100%;
+      padding: 13px 14px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+      background: #F8FAFC;
+      border: 3px solid #CBD5E1;
+      border-radius: var(--radius-md);
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Superhero & Minecraft Avatar Grid */
+    .avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .avatar-card {
+      background: #FFFFFF;
+      border: 3px solid #E2E8F0;
+      border-radius: 18px;
+      padding: 10px 6px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      user-select: none;
+    }
+
+    .avatar-card:hover {
+      transform: translateY(-5px);
+      border-color: #EF4444;
+      background: #FEF2F2;
+      box-shadow: 0 8px 16px rgba(239, 68, 68, 0.15);
+    }
+
+    .avatar-card.selected {
+      border-color: #DC2626;
+      background: #FEF2F2;
+      box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.25);
+      transform: translateY(-5px) scale(1.04);
+    }
+
+    .avatar-card.selected::after {
+      content: '⚡';
+      position: absolute;
+      top: -7px;
+      right: -7px;
+      width: 26px;
+      height: 26px;
+      background: #FACC15;
+      color: #78350F;
+      border-radius: 50%;
+      font-size: 14px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .avatar-icon-wrap {
+      width: 62px;
+      height: 62px;
+      margin: 0 auto 6px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px;
+      transition: transform 0.2s ease;
+    }
+
+    .avatar-card:hover .avatar-icon-wrap {
+      transform: scale(1.12) rotate(6deg);
+    }
+
+    .avatar-icon-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .avatar-name {
+      font-family: 'Fredoka', cursive;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .avatar-role {
+      font-size: 11px;
+      color: #DC2626;
+      font-weight: 800;
+      display: block;
+    }
+
+    /* Dialogue Speech Box */
+    .avatar-quote-box {
+      margin-top: 14px;
+      background: #FEF3C7;
+      border: 2px dashed #F59E0B;
+      border-radius: 14px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: #92400E;
+      font-size: 14px;
+      font-weight: 800;
+      animation: fadeIn 0.3s ease;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .avatar-quote-box:hover {
+      background: #FDE68A;
+      transform: translateY(-2px);
+    }
+
+    .avatar-quote-box.speaking-active {
+      border-color: #EF4444;
+      background: #FEF2F2;
+      color: #B91C1C;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.45);
+      animation: speechPulse 0.6s infinite alternate ease-in-out;
+    }
+
+    @keyframes speechPulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.025); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Error Message */
+    .feedback-error {
+      color: #DC2626;
+      font-size: 14px;
+      font-weight: 800;
+      margin-top: 6px;
+      display: none;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Heroic Submit Button */
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #DC2626 0%, #B91C1C 50%, #7F1D1D 100%);
+      color: #FFFFFF;
+      font-family: 'Fredoka', cursive;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 16px 24px;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      box-shadow: 0 6px 0 #7F1D1D, 0 12px 24px rgba(220, 38, 38, 0.45);
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 9px 0 #7F1D1D, 0 16px 28px rgba(220, 38, 38, 0.55);
+      background: linear-gradient(135deg, #EF4444 0%, #DC2626 50%, #991B1B 100%);
+    }
+
+    .btn-submit:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 #7F1D1D;
+    }
+
+    /* Footer Info */
+    .footer-badge {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #64748B;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .shake {
+      animation: shakeInput 0.4s ease;
+    }
+
+    @keyframes shakeInput {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    @media (max-width: 640px) {
+      .login-wrapper { padding: 22px 16px; }
+      .main-title { font-size: 28px; }
+      .avatar-grid { grid-template-columns: repeat(3, 1fr); }
+      .input-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Canvas de Serpentinas, Confeti y Brillos -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- Partículas de fondo estilo Marvel y Minecraft -->
+  <div class="hero-bg" id="heroBg"></div>
+
+  <!-- Contenedor Principal -->
+  <div class="login-wrapper">
+    <!-- Header -->
+    <div class="header-logo">
+      <div class="marvel-badge-title">
+        <span>🦸 MARVEL EDITION</span>
+        <span class="minecraft-badge-pill">MINECRAFT MATH ⛏️</span>
+      </div>
+      <h1 class="main-title">MIS TABLAS <span class="highlight-marvel">4° BÁSICO</span></h1>
+      <p class="subtitle">¡Aprende las tablas con el poder de tus superhéroes favoritos y prepárate para el SIMCE!</p>
+    </div>
+
+    <!-- Barra de Perfil Guardado -->
+    <div class="saved-profile-bar" id="savedProfileBar">
+      <div class="saved-profile-info">
+        <div class="saved-avatar-mini" id="savedAvatarMini">
+          <img src="Sistema/IMAGEN/avatar_spiderman.svg" alt="Avatar">
+        </div>
+        <div>
+          <div style="font-weight: 900; color: #166534; font-size: 15px;" id="savedProfileName">¡Hola, Héroe!</div>
+          <div style="font-size: 12px; color: #15803D;" id="savedProfileCourse">4° Básico A • Perfil guardado</div>
+        </div>
+      </div>
+      <button class="btn-quick-continue" id="btnQuickContinue">Continuar Misión ➔</button>
+    </div>
+
+    <!-- Formulario del Estudiante -->
+    <form id="loginForm" autocomplete="off" onsubmit="return false;">
+      <div class="input-row">
+        <!-- Nombre -->
+        <div class="form-group">
+          <label class="form-label" for="nombreEstudiante">
+            Tu Nombre o Apodo Heroico <span class="required">*</span>
+          </label>
+          <div class="input-container">
+            <input 
+              type="text" 
+              id="nombreEstudiante" 
+              class="input-text" 
+              placeholder="Ej: Sofía, Lucas, Mateo..." 
+              maxlength="24"
+              autofocus
+            >
+          </div>
+          <div class="feedback-error" id="nameError">
+            <span>⚠️</span> Escribe tu nombre para iniciar tu entrenamiento heroico.
+          </div>
+        </div>
+
+        <!-- Curso -->
+        <div class="form-group">
+          <label class="form-label" for="cursoEstudiante">Curso</label>
+          <select id="cursoEstudiante" class="select-course">
+            <option value="4° Básico A">4° Básico A</option>
+            <option value="4° Básico B">4° Básico B</option>
+            <option value="4° Básico C">4° Básico C</option>
+            <option value="4° Básico">4° Básico</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Selección de Superhéroes / Minecraft -->
+      <div class="form-group">
+        <label class="form-label">
+          Elige tu Superhéroe o Personaje <span class="required">*</span>
+        </label>
+        
+        <div class="avatar-grid" id="avatarGrid">
+          <!-- 1. Spider-Man -->
+          <div class="avatar-card selected" data-id="spiderman" data-sound="laser" data-name="Spider-Multi" data-quote="🕷️ ¡Mi sentido arácnido detecta que dominaremos todas las tablas!">
+            <div class="avatar-icon-wrap">
+              <img src="Sistema/IMAGEN/avatar_spiderman.svg" alt="Spider-Multi">
+            </div>
+            <span class="avatar-name">Spider-Multi</span>
+            <span class="avatar-role">Telaraña ×</span>
+          </div>
+
+          <!-- 2. Iron Man -->
+          <div class="avatar-card" data-id="ironman" data-sound="laser" data-name="Iron-Math" data-quote="⚡ ¡Reactor Arc al 100%: calculando resultados a la velocidad de la luz!">
+            <div class="avatar-icon-wrap">
+              <img src="Sistema/IMAGEN/avatar_ironman.svg" alt="Iron-Math">
+            </div>
+            <span class="avatar-name">Iron-Math</span>
+            <span class="avatar-role">Láser Óptico</span>
+          </div>
+
+          <!-- 3. Capitán América -->
+          <div class="avatar-card" data-id="capitan" data-sound="shield" data-name="Capitán Cálculo" data-quote="🛡️ ¡Puedo calcular todo el día! Defendamos el honor de 4° básico.">
+            <div class="avatar-icon-wrap">
+              <img src="Sistema/IMAGEN/avatar_capitan.svg" alt="Capitán Cálculo">
+            </div>
+            <span class="avatar-name">Capitán Cálculo</span>
+            <span class="avatar-role">Escudo Justo</span>
+          </div>
+
+          <!-- 4. Thor -->
+          <div class="avatar-card" data-id="thor" data-sound="laser" data-name="Thor del Trueno" data-quote="🔨 ¡Por Asgard! Ninguna multiplicación se resistirá a nuestro martillo.">
+            <div class="avatar-icon-wrap">
+              <img src="Sistema/IMAGEN/avatar_thor.svg" alt="Thor del Trueno">
+            </div>
+            <span class="avatar-name">Thor Trueno</span>
+            <span class="avatar-role">Poder Rayo</span>
+          </div>
+
+          <!-- 5. Hulk -->
+          <div class="avatar-card" data-id="hulk" data-sound="pop" data-name="Hulk Aplasta Tablas" data-quote="💥 ¡HULK APLASTA DUDAS! ¡Multiplicar es pan comido para Hulk!">
+            <div class="avatar-icon-wrap">
+              <img src="Sistema/IMAGEN/avatar_hulk.svg" alt="Hulk Aplasta Tablas">
+            </div>
+            <span class="avatar-name">Hulk Matemático</span>
+            <span class="avatar-role">Fuerza Bruta</span>
+          </div>
+
+          <!-- 6. Pantera Negra -->
+          <div class="avatar-card" data-id="pantera" data-sound="shield" data-name="Pantera Ágil" data-quote="🐾 ¡Wakanda por siempre! Agilidad felina para resolver problemas.">
+            <div class="avatar-icon-wrap">
+              <img src="Sistema/IMAGEN/avatar_pantera.svg" alt="Pantera Ágil">
+            </div>
+            <span class="avatar-name">Pantera Ágil</span>
+            <span class="avatar-role">Vibranium</span>
+          </div>
+
+          <!-- 7. Steve Minecraft -->
+          <div class="avatar-card" data-id="steve" data-sound="xp" data-name="Steve Minero" data-quote="⛏️ ¡Crafteando respuestas correctas con picos de diamante y bloques de XP!">
+            <div class="avatar-icon-wrap">
+              <img src="Sistema/IMAGEN/avatar_steve.svg" alt="Steve Minero">
+            </div>
+            <span class="avatar-name">Steve Minero</span>
+            <span class="avatar-role">Minecraft XP</span>
+          </div>
+
+          <!-- 8. Creeper Minecraft -->
+          <div class="avatar-card" data-id="creeper" data-sound="xp" data-name="Creeper Verde" data-quote="🟩 ¡Sssssss... ¡Una explosión verde de aciertos y esmeraldas!">
+            <div class="avatar-icon-wrap">
+              <img src="Sistema/IMAGEN/avatar_creeper.svg" alt="Creeper Verde">
+            </div>
+            <span class="avatar-name">Creeper Verde</span>
+            <span class="avatar-role">Esmeralda 💎</span>
+          </div>
+        </div>
+
+        <!-- Quote Box with Speaker Audio Badge -->
+        <div class="avatar-quote-box" id="avatarQuoteBox" title="¡Toca para escuchar la voz del héroe!">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 22px;">💬</span>
+            <span id="avatarQuoteText">🕷️ ¡Mi sentido arácnido detecta que dominaremos todas las tablas!</span>
+          </div>
+          <span style="font-size: 16px; padding: 4px 8px; background: rgba(0,0,0,0.06); border-radius: 8px; white-space: nowrap;" id="speakerStatusIcon" title="Escuchar voz">🔊 Voz</span>
+        </div>
+      </div>
+
+      <!-- Botón Ingresar -->
+      <button type="button" class="btn-submit" id="btnIngresar">
+        <span>¡Comenzar Misión Heroica!</span>
+        <span style="font-size: 26px;">🚀</span>
+      </button>
+
+      <!-- Footer Info -->
+      <div class="footer-badge">
+        <span>🇨🇱 Departamento de Informática • Aventura Marvel & Minecraft 4° Básico</span>
+      </div>
+    </form>
+  </div>
+
+  <!-- Sonidos y Lógica de Login -->
+  <script src="Sistema/JS/sound.js"></script>
+  <script>
+    // Partículas temáticas flotantes de fondo
+    const heroItems = ['🕷️', '⚡', '🛡️', '🔨', '💥', '⛏️', '💎', '🟩', '×', '=', '7×8', '9×6', '🌟', '✨'];
+    const bgContainer = document.getElementById('heroBg');
+
+    for (let i = 0; i < 26; i++) {
+      const el = document.createElement('div');
+      el.className = 'hero-symbol';
+      el.innerText = heroItems[Math.floor(Math.random() * heroItems.length)];
+      el.style.left = Math.random() * 95 + '%';
+      el.style.fontSize = (Math.random() * 26 + 18) + 'px';
+      el.style.animationDuration = (Math.random() * 8 + 7) + 's';
+      el.style.animationDelay = (Math.random() * 8) + 's';
+      bgContainer.appendChild(el);
+    }
+
+    // Avatar Selection Logic con sonidos Marvel y Minecraft
+    let selectedAvatar = {
+      id: 'spiderman',
+      nombre: 'Spider-Multi',
+      img: 'Sistema/IMAGEN/avatar_spiderman.svg',
+      quote: '🕷️ ¡Mi sentido arácnido detecta que dominaremos todas las tablas!'
+    };
+
+    // Sistema de Voz para Superhéroes y Personajes (Web Speech API)
+    function hablarFraseHeroica(texto, avatarId) {
+      if (!('speechSynthesis' in window)) return;
+
+      window.speechSynthesis.cancel();
+
+      // Limpiar emojis para que la voz no intente describirlos
+      let textoHablar = texto.replace(/[\u{1F300}-\u{1F9FF}|🕷️|⚡|🛡️|🔨|💥|🐾|⛏️|🟩|💎|×]/gu, '').trim();
+
+      const utter = new SpeechSynthesisUtterance(textoHablar);
+      utter.lang = 'es-ES';
+
+      // Modulación de tono (pitch) y velocidad (rate) personalizada por personaje
+      if (avatarId === 'hulk') {
+        utter.pitch = 0.52; // Súper grave y colosal
+        utter.rate = 0.88;
+      } else if (avatarId === 'thor') {
+        utter.pitch = 0.72; // Voz profunda de trueno
+        utter.rate = 0.95;
+      } else if (avatarId === 'spiderman') {
+        utter.pitch = 1.18; // Ágil, juvenil y rápido
+        utter.rate = 1.08;
+      } else if (avatarId === 'pantera') {
+        utter.pitch = 0.90; // Firme y majestuoso (¡Wakanda por siempre!)
+        utter.rate = 0.98;
+      } else if (avatarId === 'ironman') {
+        utter.pitch = 0.96; // Tecnológico y seguro
+        utter.rate = 1.04;
+      } else if (avatarId === 'capitan') {
+        utter.pitch = 0.92; // Heroico y disciplinado
+        utter.rate = 0.96;
+      } else if (avatarId === 'creeper') {
+        utter.pitch = 1.25; // Explosivo y chispeante
+        utter.rate = 1.10;
+      } else if (avatarId === 'steve') {
+        utter.pitch = 1.05; // Aventurero Minecraft
+        utter.rate = 1.02;
+      }
+
+      // Buscar voz en español
+      const voices = window.speechSynthesis.getVoices();
+      const esVoice = voices.find(v => v.lang.startsWith('es') || v.lang.includes('ES') || v.lang.includes('MX'));
+      if (esVoice) utter.voice = esVoice;
+
+      // Animación en la caja de diálogo
+      const quoteBox = document.getElementById('avatarQuoteBox');
+      const speakerIcon = document.getElementById('speakerStatusIcon');
+      if (quoteBox) {
+        quoteBox.classList.add('speaking-active');
+        if (speakerIcon) speakerIcon.innerText = '🗣️ Hablando...';
+        utter.onend = () => {
+          quoteBox.classList.remove('speaking-active');
+          if (speakerIcon) speakerIcon.innerText = '🔊 Voz';
+        };
+        utter.onerror = () => {
+          quoteBox.classList.remove('speaking-active');
+          if (speakerIcon) speakerIcon.innerText = '🔊 Voz';
+        };
+      }
+
+      // Pequeño retardo de 130ms para que primero se distinga el efecto de sonido característico
+      setTimeout(() => {
+        window.speechSynthesis.speak(utter);
+      }, 130);
+    }
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+
+    const avatarCards = document.querySelectorAll('.avatar-card');
+    const quoteText = document.getElementById('avatarQuoteText');
+    const quoteBox = document.getElementById('avatarQuoteBox');
+
+    avatarCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const soundType = card.dataset.sound;
+        if (soundType === 'laser') {
+          window.sound.playMarvelLaser();
+        } else if (soundType === 'shield') {
+          window.sound.playMarvelShield();
+        } else if (soundType === 'xp') {
+          window.sound.playMinecraftXp();
+        } else {
+          window.sound.playMinecraftPop();
+        }
+
+        avatarCards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        
+        selectedAvatar = {
+          id: card.dataset.id,
+          nombre: card.dataset.name,
+          img: card.querySelector('img').src,
+          quote: card.dataset.quote
+        };
+
+        quoteText.innerText = selectedAvatar.quote;
+
+        // Reproducir la frase con voz audible del personaje
+        hablarFraseHeroica(selectedAvatar.quote, selectedAvatar.id);
+      });
+    });
+
+    // Clic en la cajita de diálogo para volver a escuchar la frase
+    if (quoteBox) {
+      quoteBox.addEventListener('click', () => {
+        hablarFraseHeroica(selectedAvatar.quote, selectedAvatar.id);
+      });
+    }
+
+    // Cargar perfil previo si existe
+    const savedData = localStorage.getItem('mis_tablas_perfil');
+    const savedProfileBar = document.getElementById('savedProfileBar');
+    const savedProfileName = document.getElementById('savedProfileName');
+    const savedProfileCourse = document.getElementById('savedProfileCourse');
+    const savedAvatarMini = document.getElementById('savedAvatarMini');
+
+    if (savedData) {
+      try {
+        const perfil = JSON.parse(savedData);
+        if (perfil.nombre) {
+          savedProfileBar.style.display = 'flex';
+          savedProfileName.innerText = `¡Bienvenido de vuelta, ${perfil.nombre}!`;
+          savedProfileCourse.innerText = `${perfil.curso || '4° Básico'} • Héroe Nivel ${perfil.nivel || 1} (${perfil.xp || 100} XP)`;
+          if (perfil.avatarImg) {
+            savedAvatarMini.innerHTML = `<img src="${perfil.avatarImg.startsWith('IMAGEN') ? 'Sistema/' + perfil.avatarImg : perfil.avatarImg}" alt="Avatar">`;
+          }
+
+          document.getElementById('btnQuickContinue').addEventListener('click', () => {
+            window.sound.playMarvelFanfare();
+            window.sound.playMinecraftXp();
+            lanzarSerpentinasLogin();
+            setTimeout(() => {
+              window.location.href = 'Sistema/index.html';
+            }, 600);
+          });
+        }
+      } catch (e) {
+        console.error("Error reading saved profile", e);
+      }
+    }
+
+    // Input Validation & Action
+    const inputNombre = document.getElementById('nombreEstudiante');
+    const selectCurso = document.getElementById('cursoEstudiante');
+    const btnIngresar = document.getElementById('btnIngresar');
+    const nameError = document.getElementById('nameError');
+
+    inputNombre.addEventListener('input', () => {
+      if (inputNombre.value.trim().length >= 2) {
+        nameError.style.display = 'none';
+        inputNombre.classList.remove('shake');
+      }
+    });
+
+    inputNombre.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') ejecutarIngreso();
+    });
+
+    btnIngresar.addEventListener('click', ejecutarIngreso);
+
+    function ejecutarIngreso() {
+      const nombre = inputNombre.value.trim();
+      
+      if (!nombre || nombre.length < 2) {
+        window.sound.playError();
+        nameError.style.display = 'flex';
+        inputNombre.classList.add('shake');
+        inputNombre.focus();
+        setTimeout(() => inputNombre.classList.remove('shake'), 500);
+        return;
+      }
+
+      let perfilActual = {};
+      try {
+        perfilActual = JSON.parse(localStorage.getItem('mis_tablas_perfil')) || {};
+      } catch(e) { perfilActual = {}; }
+
+      const nuevoPerfil = {
+        ...perfilActual,
+        nombre: nombre,
+        curso: selectCurso.value,
+        avatarId: selectedAvatar.id,
+        avatarNombre: selectedAvatar.nombre,
+        avatarImg: 'IMAGEN/' + selectedAvatar.img.split('/').pop(),
+        fechaIngreso: new Date().toLocaleDateString(),
+        xp: perfilActual.xp || 120,
+        estrellas: perfilActual.estrellas || 15,
+        nivel: perfilActual.nivel || 1,
+        tablasProgreso: perfilActual.tablasProgreso || {
+          2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0
+        },
+        logrosDesbloqueados: perfilActual.logrosDesbloqueados || ["primer_paso"],
+        simceRealizado: perfilActual.simceRealizado || false,
+        simcePuntaje: perfilActual.simcePuntaje || 0,
+        simceAciertos: perfilActual.simceAciertos || 0
+      };
+
+      localStorage.setItem('mis_tablas_perfil', JSON.stringify(nuevoPerfil));
+      window.sound.playMarvelFanfare();
+      window.sound.playMinecraftXp();
+      lanzarSerpentinasLogin();
+
+      btnIngresar.disabled = true;
+      btnIngresar.innerHTML = '<span>¡Despegando Héroe...! 🚀</span>';
+
+      setTimeout(() => {
+        window.location.href = 'Sistema/index.html';
+      }, 750);
+    }
+
+    // Serpentinas y Brillos para el Login
+    const pCanvas = document.getElementById('confettiCanvas');
+    const pCtx = pCanvas.getContext('2d');
+    let pList = [];
+
+    function resizeCanvas() {
+      pCanvas.width = window.innerWidth;
+      pCanvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    function lanzarSerpentinasLogin() {
+      const colors = ['#EF4444', '#F59E0B', '#10B981', '#06B6D4', '#8B5CF6', '#FDE047'];
+      pList = [];
+      // Serpentinas
+      for (let i = 0; i < 24; i++) {
+        pList.push({
+          tipo: 'serpentina',
+          x: window.innerWidth / 2,
+          y: window.innerHeight * 0.6,
+          vx: (Math.random() - 0.5) * 16,
+          vy: -(Math.random() * 14 + 6),
+          ancho: 8,
+          largo: 30,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * Math.PI,
+          vRot: (Math.random() - 0.5) * 0.15,
+          life: 1
+        });
+      }
+      // Brillos
+      for (let i = 0; i < 35; i++) {
+        pList.push({
+          tipo: 'brillo',
+          x: window.innerWidth * (0.1 + Math.random() * 0.8),
+          y: window.innerHeight * (0.2 + Math.random() * 0.6),
+          vx: (Math.random() - 0.5) * 6,
+          vy: (Math.random() - 0.5) * 6,
+          radio: 10,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: 0,
+          vRot: (Math.random() - 0.5) * 0.2,
+          life: 1
+        });
+      }
+      animarParticulas();
+    }
+
+    function animarParticulas() {
+      pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+      let any = false;
+
+      pList.forEach(p => {
+        p.life -= 0.015;
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.life > 0) {
+          any = true;
+          pCtx.save();
+          pCtx.globalAlpha = Math.max(0, p.life);
+
+          if (p.tipo === 'serpentina') {
+            p.vy += 0.3;
+            p.rot += p.vRot;
+            pCtx.translate(p.x, p.y);
+            pCtx.rotate(p.rot);
+            pCtx.fillStyle = p.color;
+            pCtx.fillRect(-p.ancho/2, 0, p.ancho, p.largo);
+          } else {
+            p.rot += p.vRot;
+            pCtx.translate(p.x, p.y);
+            pCtx.rotate(p.rot);
+            pCtx.fillStyle = p.color;
+            pCtx.beginPath();
+            const r = p.radio;
+            const inner = r * 0.25;
+            for (let s = 0; s < 4; s++) {
+              const a1 = (s * Math.PI) / 2;
+              const a2 = a1 + Math.PI / 4;
+              pCtx.lineTo(Math.cos(a1) * r, Math.sin(a1) * r);
+              pCtx.lineTo(Math.cos(a2) * inner, Math.sin(a2) * inner);
+            }
+            pCtx.closePath();
+            pCtx.fill();
+          }
+
+          pCtx.restore();
+        }
+      });
+
+      if (any) requestAnimationFrame(animarParticulas);
+      else pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+    }
+  </script>
+</body>
+</html>
