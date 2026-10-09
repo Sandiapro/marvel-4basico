@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <!-- Top Face (Stone Gray) -->
+  <polygon points="50,10 88,32 50,54 12,32" fill="#787878" stroke="#4B4B4B" stroke-width="2"/>
+  <!-- Diamond flecks top -->
+  <polygon points="46,24 54,20 58,26 50,30" fill="#22D3EE"/>
+  <polygon points="34,28 40,26 42,32 36,34" fill="#67E8F9"/>
+  <!-- Left Face -->
+  <polygon points="12,32 50,54 50,94 12,72" fill="#636363" stroke="#404040" stroke-width="2"/>
+  <!-- Diamond flecks left -->
+  <polygon points="24,46 32,50 30,58 22,54" fill="#06B6D4"/>
+  <polygon points="26,48 30,50 28,54 24,52" fill="#A5F3FC"/>
+  <polygon points="36,68 44,72 42,80 34,76" fill="#0891B2"/>
+  <!-- Right Face -->
+  <polygon points="50,54 88,32 88,72 50,94" fill="#525252" stroke="#333333" stroke-width="2"/>
+  <!-- Diamond flecks right -->
+  <polygon points="62,50 72,44 76,52 66,58" fill="#06B6D4"/>
+  <polygon points="64,52 70,48 72,52 66,56" fill="#A5F3FC"/>
+  <polygon points="60,70 68,66 70,74 62,78" fill="#0891B2"/>
+</svg>

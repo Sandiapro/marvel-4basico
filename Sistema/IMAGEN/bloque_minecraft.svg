@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <!-- Top Face (Grass Green) -->
+  <polygon points="50,10 88,32 50,54 12,32" fill="#5B8E31" stroke="#3E6320" stroke-width="2"/>
+  <!-- Top Pixel Texture Highlights -->
+  <polygon points="50,18 68,28 50,38 32,28" fill="#71AC38"/>
+  <polygon points="50,22 58,26 50,30 42,26" fill="#88C744"/>
+  <!-- Left Face (Dirt Brown) -->
+  <polygon points="12,32 50,54 50,94 12,72" fill="#866043" stroke="#5A402D" stroke-width="2"/>
+  <!-- Left Grass Trim -->
+  <polygon points="12,32 50,54 50,62 38,56 34,60 26,52 18,58 12,48" fill="#5B8E31"/>
+  <rect x="22" y="68" width="6" height="6" fill="#5A402D"/>
+  <rect x="36" y="74" width="8" height="6" fill="#A0724E"/>
+  <!-- Right Face (Darker Dirt Brown) -->
+  <polygon points="50,54 88,32 88,72 50,94" fill="#6B4B34" stroke="#483222" stroke-width="2"/>
+  <!-- Right Grass Trim -->
+  <polygon points="50,54 88,32 88,48 82,54 74,48 66,58 58,52 50,62" fill="#476F26"/>
+  <rect x="68" y="64" width="6" height="6" fill="#483222"/>
+  <rect x="58" y="76" width="8" height="6" fill="#866043"/>
+</svg>

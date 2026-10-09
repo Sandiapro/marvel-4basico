@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <defs>
+    <radialGradient id="shieldShine" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.45"/>
+      <stop offset="50%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.35"/>
+    </radialGradient>
+  </defs>
+  <!-- Outer Red Ring -->
+  <circle cx="50" cy="50" r="48" fill="#DC2626" stroke="#991B1B" stroke-width="2"/>
+  <!-- Silver Ring -->
+  <circle cx="50" cy="50" r="38" fill="#E2E8F0" stroke="#94A3B8" stroke-width="2"/>
+  <!-- Middle Red Ring -->
+  <circle cx="50" cy="50" r="28" fill="#DC2626" stroke="#991B1B" stroke-width="2"/>
+  <!-- Blue Center -->
+  <circle cx="50" cy="50" r="18" fill="#2563EB" stroke="#1D4ED8" stroke-width="2"/>
+  <!-- White Star -->
+  <polygon points="50,34 53.5,44 64,44 55.5,50.5 58.5,61 50,54.5 41.5,61 44.5,50.5 36,44 46.5,44" fill="#FFFFFF"/>
+  <!-- Metallic Shine Overlay -->
+  <circle cx="50" cy="50" r="48" fill="url(#shieldShine)"/>
+</svg>

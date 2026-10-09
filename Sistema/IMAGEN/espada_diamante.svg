@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <!-- Minecraft Diamond Sword Pixel Art diagonally oriented -->
+  <!-- Blade -->
+  <polygon points="76,12 88,24 40,72 28,60" fill="#22D3EE" stroke="#0891B2" stroke-width="2"/>
+  <line x1="82" y1="18" x2="34" y2="66" stroke="#CFFAFE" stroke-width="3"/>
+  <!-- Guard -->
+  <polygon points="26,62 38,74 34,80 20,80 20,66" fill="#38BDF8" stroke="#0369A1" stroke-width="2"/>
+  <rect x="36" y="58" width="8" height="8" fill="#1E293B"/>
+  <rect x="22" y="72" width="8" height="8" fill="#1E293B"/>
+  <!-- Hilt / Handle -->
+  <rect x="18" y="76" width="6" height="6" fill="#78350F"/>
+  <rect x="12" y="82" width="6" height="6" fill="#78350F"/>
+  <!-- Pommel -->
+  <rect x="8" y="86" width="8" height="8" fill="#1E293B"/>
+</svg>

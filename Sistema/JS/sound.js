@@ -1,6 +1,6 @@
 /**
  * SISTEMA DE SONIDOS SINTETIZADOS - MIS TABLAS
- * Efectos de sonido estilo MARVEL & MINECRAFT con Web Audio API
+ * Efectos de sonido épicos MARVEL & MINECRAFT con Web Audio API
  * 100% nativo, sin archivos externos ni dependencias.
  */
 
@@ -54,26 +54,183 @@ class SoundSystem {
     osc.stop(startTime + duration);
   }
 
-  // Clic general de botón
   playClick() {
     this.playTone(620, 'triangle', 0.08, 0.08);
   }
 
   // =========================================================================
-  // SONIDOS ESTILO MINECRAFT
+  // EFECTOS CINEMÁTICOS DE SUPERHÉROES MARVEL
   // =========================================================================
 
-  // Orbe de Experiencia Minecraft (XP Orb Ding: plink agudo y cristalino)
+  // 1. HULK: Rugido sísmico y temblor de tierra
+  playHulkRoar() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+
+    // Sub-oscilador para impacto en el pecho
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(90, now);
+    osc.frequency.exponentialRampToValueAtTime(45, now + 0.45);
+
+    gain.gain.setValueAtTime(0.25, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.5);
+
+    // Ruido rugiente añadido
+    this.playNoise(0.35, 0.18, 0.05);
+  }
+
+  // 2. BLACK PANTHER: Tambor de guerra y grito de Wakanda
+  playWakandaCry() {
+    if (this.muted) return;
+    this.init();
+    // Golpe doble de tambor tribal + vibranium
+    this.playTone(180, 'triangle', 0.18, 0.22, 0.0);
+    this.playTone(140, 'triangle', 0.22, 0.25, 0.12);
+    this.playTone(880, 'sine', 0.35, 0.12, 0.18);
+  }
+
+  // 3. IRON MAN: Secuencia de Jarvis + Carga de Repulsor
+  playJarvisChime() {
+    if (this.muted) return;
+    this.init();
+    // Chime futurista de interfaz holográfica
+    this.playTone(1200, 'sine', 0.08, 0.12, 0.0);
+    this.playTone(1600, 'sine', 0.09, 0.14, 0.07);
+    this.playTone(2400, 'sine', 0.16, 0.16, 0.15);
+    // Láser
+    setTimeout(() => this.playMarvelLaser(), 180);
+  }
+
+  // 4. THOR: Trueno atronador y chispas de relámpago
+  playThunderClap() {
+    if (this.muted) return;
+    this.init();
+    this.playTone(1100, 'sawtooth', 0.12, 0.18, 0.0);
+    this.playTone(440, 'triangle', 0.25, 0.20, 0.05);
+    this.playNoise(0.6, 0.22, 0.08);
+  }
+
+  // 5. SPIDER-MAN: Disparo de telaraña "Thwip-Thwip"
+  playWebThwip() {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(300, now);
+    osc.frequency.exponentialRampToValueAtTime(1800, now + 0.08);
+
+    gain.gain.setValueAtTime(0.18, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.08);
+
+    // Segundo "thwip" rápido
+    setTimeout(() => {
+      if (!this.ctx) return;
+      const n2 = this.ctx.currentTime;
+      const o2 = this.ctx.createOscillator();
+      const g2 = this.ctx.createGain();
+      o2.type = 'sine';
+      o2.frequency.setValueAtTime(400, n2);
+      o2.frequency.exponentialRampToValueAtTime(2100, n2 + 0.09);
+      g2.gain.setValueAtTime(0.16, n2);
+      g2.gain.exponentialRampToValueAtTime(0.001, n2 + 0.09);
+      o2.connect(g2);
+      g2.connect(this.ctx.destination);
+      o2.start(n2);
+      o2.stop(n2 + 0.09);
+    }, 90);
+  }
+
+  // 6. CAPITÁN AMÉRICA: Rebote y resonancia de escudo
+  playCapShieldRing() {
+    if (this.muted) return;
+    this.init();
+    this.playTone(880, 'triangle', 0.4, 0.18, 0.0);
+    this.playTone(1320, 'sine', 0.5, 0.14, 0.02);
+    this.playTone(1760, 'sine', 0.6, 0.10, 0.04);
+  }
+
+  // 7. CREEPER: Silbido "Tssssss" y explosión "BOOM"
+  playCreeperExplode() {
+    if (this.muted) return;
+    this.init();
+    // Silbido de fusible Tsssss
+    this.playNoise(0.5, 0.12, 0.0);
+    // Boom explosivo
+    setTimeout(() => {
+      this.playTone(80, 'sawtooth', 0.4, 0.25, 0.0);
+      this.playNoise(0.4, 0.28, 0.02);
+    }, 450);
+  }
+
+  // 8. MINECRAFT SWORD HIT: Golpe de espada de diamante
+  playSwordHit() {
+    if (this.muted) return;
+    this.init();
+    this.playTone(450, 'sawtooth', 0.1, 0.14, 0.0);
+    this.playTone(900, 'sine', 0.12, 0.12, 0.02);
+  }
+
+  // Generador de Ruido Blanco para impactos y explosiones
+  playNoise(duration = 0.3, volume = 0.1, delay = 0) {
+    if (this.muted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const bufferSize = this.ctx.sampleRate * duration;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(800, this.ctx.currentTime + delay);
+
+    const gain = this.ctx.createGain();
+    const startTime = this.ctx.currentTime + delay;
+    gain.gain.setValueAtTime(volume, startTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    noise.start(startTime);
+  }
+
+  // =========================================================================
+  // SONIDOS DE INTERFAZ MINECRAFT & MARVEL
+  // =========================================================================
   playMinecraftXp() {
     if (this.muted) return;
     this.init();
-    // Sonido icónico de recoger orbe de XP verde
     const pitch = 850 + Math.random() * 200;
-    this.playTone(pitch, 'sine', 0.12, 0.14, 0.0);
-    this.playTone(pitch * 1.5, 'triangle', 0.08, 0.08, 0.03);
+    this.playTone(pitch, 'sine', 0.12, 0.15, 0.0);
+    this.playTone(pitch * 1.5, 'triangle', 0.08, 0.09, 0.03);
   }
 
-  // Pop de recoger ítem / bloque de Minecraft
   playMinecraftPop() {
     if (this.muted) return;
     this.init();
@@ -95,30 +252,15 @@ class SoundSystem {
     osc.stop(now + 0.09);
   }
 
-  // Campana / Yunque de Minecraft
-  playMinecraftAnvil() {
-    if (this.muted) return;
-    this.init();
-    this.playTone(1200, 'sine', 0.4, 0.12, 0.0);
-    this.playTone(1760, 'sine', 0.5, 0.09, 0.05);
-  }
-
-  // Subida de nivel al estilo Minecraft (Level Up Ding Chime)
   playMinecraftLevelUp() {
     if (this.muted) return;
     this.init();
-    // Melodía clásica de nivel de Minecraft: notas arpegiadas limpias
     const notes = [440, 554, 659, 880, 1108];
     notes.forEach((freq, idx) => {
       this.playTone(freq, 'sine', 0.22, 0.15, idx * 0.09);
     });
   }
 
-  // =========================================================================
-  // SONIDOS ESTILO MARVEL
-  // =========================================================================
-
-  // Disparo de Repulsor Iron Man / Rayo Láser Heroico
   playMarvelLaser() {
     if (this.muted) return;
     this.init();
@@ -140,19 +282,14 @@ class SoundSystem {
     osc.stop(now + 0.18);
   }
 
-  // Rebote de Escudo Capitán América (Vibranium Ping metálico)
   playMarvelShield() {
-    if (this.muted) return;
-    this.init();
-    this.playTone(980, 'triangle', 0.25, 0.15, 0.0);
-    this.playTone(1470, 'sine', 0.35, 0.12, 0.02);
+    this.playCapShieldRing();
   }
 
-  // Fanfarria Épica de Los Vengadores / Victoria Marvel
   playMarvelFanfare() {
     if (this.muted) return;
     this.init();
-    // Tema triunfal heroico (Avengers Brass Theme)
+    // Tema triunfal heroico Avengers
     const notes = [392, 523.25, 659.25, 783.99, 1046.50, 1174.66, 1318.51];
     const times = [0.0, 0.12, 0.24, 0.38, 0.54, 0.72, 0.92];
     const lens  = [0.12, 0.12, 0.14, 0.16, 0.18, 0.22, 0.60];
@@ -162,7 +299,6 @@ class SoundSystem {
     });
   }
 
-  // Brillos mágicos y serpentinas estelares (Chispas)
   playSparkle() {
     if (this.muted) return;
     this.init();
@@ -172,7 +308,6 @@ class SoundSystem {
     });
   }
 
-  // Compatibilidad con funciones del sistema
   playSuccess() {
     this.playMinecraftXp();
     setTimeout(() => this.playSparkle(), 60);

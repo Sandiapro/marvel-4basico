@@ -21,13 +21,22 @@
        ======================================================================== -->
   <header class="top-header">
     <div class="header-container">
-      <!-- Logo y Título -->
+      <!-- Logo y Título Marvel & Minecraft -->
       <div class="brand-section" id="brandSection" title="Ir al menú principal">
-        <div class="brand-logo-icon">×</div>
+        <img src="IMAGEN/escudo_marvel.svg" style="width:42px; height:42px;" alt="Escudo Marvel">
         <div class="brand-text">
           <h1>MIS TABLAS</h1>
-          <span>4° BÁSICO • MATEMÁTICA</span>
+          <span style="color:#FACC15; font-weight:900;">🦸 MARVEL & MINECRAFT 4° BÁSICO ⛏️</span>
         </div>
+      </div>
+
+      <!-- Barra de Experiencia Minecraft en vivo -->
+      <div class="header-mc-xp-bar" style="display:flex; align-items:center; gap:8px; background:#0F172A; padding:4px 14px; border-radius:999px; border:2px solid #16A34A;">
+        <span style="font-size:16px;">⛏️</span>
+        <div style="width:90px; height:8px; background:#1E293B; border-radius:4px; overflow:hidden; border:1px solid #10B981;">
+          <div style="width:80%; height:100%; background:#10B981; box-shadow:0 0 6px #34D399;"></div>
+        </div>
+        <span style="color:#FDE047; font-family:'Fredoka', cursive; font-size:12px; font-weight:900;" id="hudLevelBadge">NV 1 💎</span>
       </div>
 
       <!-- Estado del Estudiante -->
@@ -72,7 +81,7 @@
     <div class="nav-container">
       <button class="nav-tab-btn active" data-view="menu">
         <span class="tab-icon">🏠</span>
-        <span>Menú Principal</span>
+        <span>Base de Héroes</span>
       </button>
       <button class="nav-tab-btn" data-view="aprender">
         <span class="tab-icon">📘</span>
@@ -80,11 +89,11 @@
       </button>
       <button class="nav-tab-btn" data-view="juegos">
         <span class="tab-icon">🎮</span>
-        <span>Juegos y Desafíos</span>
+        <span>Juegos Marvel & Minecraft</span>
       </button>
       <button class="nav-tab-btn" data-view="progreso">
-        <span class="tab-icon">📊</span>
-        <span>Mi Progreso y Medallas</span>
+        <span class="tab-icon">🏆</span>
+        <span>Logros & Diamantes</span>
       </button>
       <button class="nav-tab-btn badge-simce" data-view="simce">
         <span class="tab-icon">📝</span>
@@ -102,22 +111,24 @@
          VISTA 1: MENÚ PRINCIPAL
          ---------------------------------------------------------------------- -->
     <section class="app-view active" id="view-menu">
-      <!-- Hero Banner -->
-      <div class="welcome-hero-banner">
+      <!-- Hero Banner Marvel & Minecraft -->
+      <div class="welcome-hero-banner" style="background: linear-gradient(135deg, #B91C1C 0%, #1D4ED8 50%, #065F46 100%); border: 3px solid #FDE047; position:relative;">
+        <img src="IMAGEN/bloque_diamante.svg" style="position:absolute; right:130px; top:15px; width:52px; height:52px; animation:bobCorner 3s infinite alternate;" alt="Diamante">
+        <img src="IMAGEN/escudo_marvel.svg" style="position:absolute; right:20px; top:15px; width:52px; height:52px; animation:bobCorner 3s infinite alternate 0.5s;" alt="Escudo">
         <div class="welcome-info">
-          <h2>¡Hola, <span id="heroNombreEstudiante">Amigo</span>! 👋</h2>
-          <p>Bienvenido a tu aventura de tablas de multiplicar. Explora grupos y patrones matemáticos, supera entretenidos minijuegos y prepárate con el ensayo oficial tipo SIMCE.</p>
+          <h2>¡Bienvenido, <span id="heroNombreEstudiante">Héroe</span>! 🦸‍♂️⛏️</h2>
+          <p>Entrena con el poder de los Vengadores y craftea multiplicaciones legendarias con herramientas de diamante. ¡Prepárate para vencer en el ensayo oficial tipo SIMCE!</p>
           <div class="hero-stats-row">
-            <div class="hero-stat-box">
+            <div class="hero-stat-box" style="background:rgba(0,0,0,0.3); border:1px solid #FDE047;">
               Tablas Dominadas: <strong id="heroTablasDominadasCount">0 / 9</strong>
             </div>
-            <div class="hero-stat-box">
-              Desafío Recomendado: <strong style="color:#A7F3D0;">Ensayo SIMCE 4° Básico</strong>
+            <div class="hero-stat-box" style="background:rgba(0,0,0,0.3); border:1px solid #4ADE80;">
+              Misión Prioritaria: <strong style="color:#A7F3D0;">Ensayo SIMCE 4° Básico</strong>
             </div>
           </div>
         </div>
         <div>
-          <button class="btn-launch-quiz" id="btnHeroSimce" style="background:#F59E0B; box-shadow:0 4px 0 #D97706; font-size:16px;">
+          <button class="btn-launch-quiz" id="btnHeroSimce" style="background:#DC2626; border:2px solid #FDE047; box-shadow:0 5px 0 #991B1B; font-size:16px;">
             <span>Hacer Ensayo SIMCE</span>
             <span>📝</span>
           </button>
@@ -278,54 +289,64 @@
     </section>
 
     <!-- ----------------------------------------------------------------------
-         VISTA 3: JUEGOS Y DESAFÍOS (MINIJUEGOS DINÁMICOS)
+         VISTA 3: JUEGOS Y DESAFÍOS (MINIJUEGOS DINÁMICOS MARVEL & MINECRAFT)
          ---------------------------------------------------------------------- -->
     <section class="app-view" id="view-juegos">
       <div class="games-hub-header">
-        <h2>🎮 Sala de Juegos y Desafíos Matemáticos</h2>
-        <p>Aprende jugando: no memorices de forma monótona, ¡diviértete superando cada nivel!</p>
+        <h2 style="font-size:34px; margin-bottom:8px;">🎮 Batallas y Juegos Marvel & Minecraft</h2>
+        <p style="font-size:16px;">¡Aprende jugando con tus héroes favoritos! Rompe la monotonía con batallas de jefes, crafteo y gemas cósmicas.</p>
       </div>
 
-      <!-- Selección de Juegos -->
+      <!-- Selección de Juegos con Iconos de Marvel y Minecraft -->
       <div class="games-selection-grid" id="gamesSelectionList">
         <!-- Juego 1: Memoria -->
-        <div class="game-select-card" data-game="memoria">
-          <div class="game-icon-large" style="background:#EEF2FF; color:#4F46E5;">🎴</div>
-          <h3>Memoria Matemática</h3>
-          <p>Encuentra las parejas volteando cartas que unan la multiplicación con su resultado correcto.</p>
-          <button class="btn-play-mini">Jugar Memoria</button>
+        <div class="game-select-card" data-game="memoria" style="border:3px solid #3B82F6;">
+          <div class="game-icon-large" style="background:#EFF6FF;">
+            <img src="IMAGEN/escudo_marvel.svg" style="width:52px; height:52px;" alt="Escudo">
+          </div>
+          <h3 style="color:#1E3A8A;">Memoria de Héroes & Bloques</h3>
+          <p>Empareja escudos, reactores, espadas y bloques de diamante volteando cartas 3D con multiplicaciones.</p>
+          <button class="btn-play-mini" style="background:#2563EB;">Jugar Memoria</button>
         </div>
 
-        <!-- Juego 2: Burbujas -->
-        <div class="game-select-card" data-game="burbujas">
-          <div class="game-icon-large" style="background:#ECFEFF; color:#06B6D4;">🎈</div>
-          <h3>Atrapa el Resultado</h3>
-          <p>Explota la burbuja flotante que contenga el resultado exacto antes de que se acabe el tiempo.</p>
-          <button class="btn-play-mini" style="background:#06B6D4;">Jugar Burbujas</button>
+        <!-- Juego 2: Gemas del Infinito & Orbes -->
+        <div class="game-select-card" data-game="burbujas" style="border:3px solid #8B5CF6;">
+          <div class="game-icon-large" style="background:#F5F3FF;">
+            <img src="IMAGEN/guantelete.svg" style="width:52px; height:52px;" alt="Guantelete">
+          </div>
+          <h3 style="color:#6D28D9;">Gemas del Infinito & Orbes XP</h3>
+          <p>Atrapa las gemas cósmicas flotantes y orbes de experiencia de Minecraft con la respuesta correcta.</p>
+          <button class="btn-play-mini" style="background:#7C3AED;">Cazar Gemas</button>
         </div>
 
-        <!-- Juego 3: Constructor -->
-        <div class="game-select-card" data-game="constructor">
-          <div class="game-icon-large" style="background:#FFFBEB; color:#F59E0B;">🧱</div>
-          <h3>Construye la Multiplicación</h3>
-          <p>Ajusta filas y columnas para armar la cantidad pedida por los clientes del almacén.</p>
-          <button class="btn-play-mini" style="background:#F59E0B;">Construir</button>
+        <!-- Juego 3: Mesa de Crafteo Steve & Stark -->
+        <div class="game-select-card" data-game="constructor" style="border:3px solid #16A34A;">
+          <div class="game-icon-large" style="background:#F0FDF4;">
+            <img src="IMAGEN/bloque_minecraft.svg" style="width:52px; height:52px;" alt="Crafteo">
+          </div>
+          <h3 style="color:#15803D;">Mesa de Crafteo & Taller Stark</h3>
+          <p>Organiza filas y columnas de bloques de diamante, esmeralda y vibranium para forjar armaduras exactas.</p>
+          <button class="btn-play-mini" style="background:#16A34A;">Ir a la Mesa</button>
         </div>
 
-        <!-- Juego 4: Detective -->
-        <div class="game-select-card" data-game="detective">
-          <div class="game-icon-large" style="background:#FDF2F8; color:#EC4899;">🕵️</div>
-          <h3>Detective Matemático</h3>
-          <p>Sigue las pistas de los héroes y agentes secretos para descubrir cuál de los números es el culpable.</p>
-          <button class="btn-play-mini" style="background:#EC4899;">Ser Detective</button>
+        <!-- Juego 4: Misión S.H.I.E.L.D. y Aldea -->
+        <div class="game-select-card" data-game="detective" style="border:3px solid #EC4899;">
+          <div class="game-icon-large" style="background:#FDF2F8;">
+            <img src="IMAGEN/reactor_arc.svg" style="width:52px; height:52px;" alt="Reactor Arc">
+          </div>
+          <h3 style="color:#BE185D;">Misión S.H.I.E.L.D. & Aldea</h3>
+          <p>Sigue las pistas clasificadas de Nick Fury y el Aldeano Sabio para capturar al villano matemático oculto.</p>
+          <button class="btn-play-mini" style="background:#DB2777;">Misión Secreta</button>
         </div>
 
-        <!-- Juego 5: Reloj -->
-        <div class="game-select-card" data-game="reloj">
-          <div class="game-icon-large" style="background:#F0FDF4; color:#10B981;">⚡</div>
-          <h3>Desafío 60 Segundos</h3>
-          <p>Responde la mayor cantidad de tablas en un minuto y acumula rachas de fuego combo x3.</p>
-          <button class="btn-play-mini" style="background:#10B981;">Iniciar Reloj</button>
+        <!-- Juego 5: Batalla Contra Thanos & Ender Dragon -->
+        <div class="game-select-card" data-game="reloj" style="border:3px solid #DC2626;">
+          <div class="game-icon-large" style="background:#FEF2F2;">
+            <img src="IMAGEN/espada_diamante.svg" style="width:52px; height:52px;" alt="Espada Diamante">
+          </div>
+          <h3 style="color:#B91C1C;">Batalla: Thanos & Ender Dragon</h3>
+          <p>¡Duelo épico de 60 segundos! Golpea al jefe con rayos láser y espadas de diamante con cada respuesta correcta.</p>
+          <button class="btn-play-mini" style="background:#DC2626;">¡A la Batalla!</button>
         </div>
       </div>
 
@@ -337,98 +358,116 @@
             <span>Volver a la Lista de Juegos</span>
           </button>
           <div class="game-hud-stats" id="activeGameHud">
-            <!-- HUD dinámico del juego -->
+            <!-- HUD dinámico -->
           </div>
         </div>
 
         <!-- Subpantalla 1: Memoria -->
         <div class="game-specific-container" id="arenaMemoria">
           <div style="text-align:center; margin-bottom:16px;">
-            <span style="font-weight:800; color:var(--text-muted);">Movimientos realizados: <strong id="memoryMovesCount" style="color:var(--primary);">0</strong></span>
+            <span style="font-weight:800; color:var(--text-muted); font-size:16px;">Movimientos realizados: <strong id="memoryMovesCount" style="color:var(--primary); font-size:20px;">0</strong></span>
           </div>
           <div class="memory-board" id="memoryBoard"></div>
         </div>
 
-        <!-- Subpantalla 2: Burbujas -->
+        <!-- Subpantalla 2: Gemas del Infinito y Orbes XP -->
         <div class="game-specific-container" id="arenaBurbujas">
-          <div style="display:flex; justify-content:space-between; margin-bottom:16px; font-weight:800;">
-            <span>Puntaje: <strong id="bubbleScore" style="color:#0284C7; font-size:20px;">0</strong></span>
-            <span>Tiempo: <strong id="bubbleTimer" style="color:#EF4444; font-size:20px;">30s</strong></span>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; font-weight:800; background:#0F172A; padding:12px 20px; border-radius:16px; border:2px solid #8B5CF6;">
+            <span style="color:#FDE047; font-size:17px;">💎 Gemas Colectadas: <strong id="bubbleScore" style="color:#38BDF8; font-size:24px;">0</strong></span>
+            <span style="color:#EF4444; font-size:20px;">⏱️ Tiempo Restante: <strong id="bubbleTimer">30s</strong></span>
           </div>
-          <div class="bubble-game-stage">
-            <div class="target-multiplication-bubble" id="bubbleTargetText">6 × 7 = ?</div>
+          <div class="bubble-game-stage" style="background: radial-gradient(circle at 50% 30%, #312E81 0%, #0F172A 85%); border:3px solid #8B5CF6;">
+            <div class="target-multiplication-bubble" id="bubbleTargetText" style="border-color:#F59E0B; color:#78350F; background:#FFFBEB;">6 × 7 = ?</div>
             <div class="bubbles-container" id="bubblesContainer"></div>
           </div>
         </div>
 
-        <!-- Subpantalla 3: Constructor -->
+        <!-- Subpantalla 3: Mesa de Crafteo y Armería Stark -->
         <div class="game-specific-container" id="arenaConstructor">
-          <div class="builder-mission-card">
-            <h3 style="font-size:20px; color:#B45309; margin-bottom:6px;">📦 Misión de Organización</h3>
-            <p id="builderMissionText" style="font-weight:700; color:#78350F; font-size:16px;">Organiza 24 objetos en filas y columnas iguales.</p>
-            <div style="font-size:24px; font-weight:900; color:#B45309; margin-top:8px;">Meta: <span id="builderTargetVal">24</span> objetos</div>
+          <div class="builder-mission-card" style="background:#0F172A; border:3px solid #16A34A; color:#FFFFFF; border-radius:18px;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:6px;">
+              <img src="IMAGEN/bloque_minecraft.svg" style="width:38px; height:38px;" alt="Bloque">
+              <h3 style="font-size:22px; color:#4ADE80; font-family:'Fredoka';">⛏️ Mesa de Crafteo de Steve & Taller Stark</h3>
+              <img src="IMAGEN/reactor_arc.svg" style="width:38px; height:38px;" alt="Reactor">
+            </div>
+            <p id="builderMissionText" style="font-weight:700; color:#A7F3D0; font-size:16px;">Craftea 24 lingotes de vibranium y diamantes en filas y columnas iguales.</p>
+            <div style="font-size:24px; font-weight:900; color:#FDE047; margin-top:8px;">Meta de Crafteo: <span id="builderTargetVal">24</span> bloques</div>
           </div>
 
           <div class="builder-controls">
             <div class="builder-stepper">
-              <div class="builder-stepper-title">Filas (Horizontal)</div>
+              <div class="builder-stepper-title">Filas de Bloques</div>
               <div style="display:flex; align-items:center; gap:10px;">
                 <button class="btn-stepper" id="btnRowsDown">−</button>
-                <span id="builderRowsVal" style="font-family:'Fredoka'; font-size:24px; font-weight:700; min-width:30px;">3</span>
+                <span id="builderRowsVal" style="font-family:'Fredoka'; font-size:26px; font-weight:700; min-width:32px;">3</span>
                 <button class="btn-stepper" id="btnRowsUp">+</button>
               </div>
             </div>
 
             <div class="builder-stepper">
-              <div class="builder-stepper-title">Columnas (Vertical)</div>
+              <div class="builder-stepper-title">Columnas de Bloques</div>
               <div style="display:flex; align-items:center; gap:10px;">
                 <button class="btn-stepper" id="btnColsDown">−</button>
-                <span id="builderColsVal" style="font-family:'Fredoka'; font-size:24px; font-weight:700; min-width:30px;">4</span>
+                <span id="builderColsVal" style="font-family:'Fredoka'; font-size:26px; font-weight:700; min-width:32px;">4</span>
                 <button class="btn-stepper" id="btnColsUp">+</button>
               </div>
             </div>
           </div>
 
-          <div style="text-align:center; font-family:'Fredoka'; font-size:24px; font-weight:700; color:var(--primary); margin-bottom:14px;" id="builderCurrentCalc">
+          <div style="text-align:center; font-family:'Fredoka'; font-size:26px; font-weight:700; color:var(--primary); margin-bottom:14px;" id="builderCurrentCalc">
             3 × 4 = 12
           </div>
 
           <div class="builder-grid-display" id="builderGridDisplay"></div>
 
-          <button class="btn-launch-quiz" id="btnVerificarConstructor" style="max-width:320px; margin:20px auto 0;">
-            <span>Verificar Construcción</span>
-            <span>✓</span>
+          <button class="btn-launch-quiz" id="btnVerificarConstructor" style="max-width:320px; margin:20px auto 0; background:#16A34A; box-shadow:0 4px 0 #14532D;">
+            <span>¡Craftear en la Mesa! ⛏️</span>
           </button>
         </div>
 
-        <!-- Subpantalla 4: Detective -->
+        <!-- Subpantalla 4: Misión S.H.I.E.L.D. y Aldea -->
         <div class="game-specific-container" id="arenaDetective">
           <div class="detective-wrapper">
-            <div class="detective-badge-header">
-              <span style="font-size:38px;">🕵️</span>
+            <div class="detective-badge-header" style="background:#0F172A; border:3px solid #F59E0B; color:#FFFFFF;">
+              <span style="font-size:42px;">📁</span>
               <div>
-                <h3 style="font-size:20px; color:#92400E;">Caso de Investigación: El Número Oculto</h3>
-                <p style="font-size:13px; font-weight:700; color:#78350F;">Lee cuidadosamente cada una de las pistas y descubre al número sospechoso.</p>
+                <h3 style="font-size:22px; color:#FDE047;">Dossier Clasificado de S.H.I.E.L.D. & Aldea Secreta</h3>
+                <p style="font-size:14px; font-weight:700; color:#E2E8F0;">Informes interceptados por Nick Fury y el Aldeano Sabio. ¡Descubre el código culpable!</p>
               </div>
             </div>
 
             <div class="clues-list" id="detectiveCluesList"></div>
 
-            <h4 style="font-size:18px; margin-bottom:12px; text-align:center;">¿Quién es el número culpable?</h4>
+            <h4 style="font-size:19px; margin-bottom:12px; text-align:center;">¿Cuál es el número sospechoso?</h4>
             <div class="detective-options-grid" id="detectiveSuspectsGrid"></div>
           </div>
         </div>
 
-        <!-- Subpantalla 5: Reloj -->
+        <!-- Subpantalla 5: Batalla Contra Thanos & Ender Dragon (60 Segundos) -->
         <div class="game-specific-container" id="arenaReloj">
-          <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:800; font-size:18px;">
-            <span>Aciertos: <strong id="speedScore" style="color:var(--primary); font-size:26px;">0</strong></span>
-            <span>Racha Combo: <strong id="speedStreak" style="color:#EA580C; font-size:26px;">x1</strong></span>
-            <span>Tiempo: <strong id="speedTimer" style="color:#EF4444; font-size:26px;">60s</strong></span>
+          <!-- Boss Battle HUD -->
+          <div class="boss-hud-bar" style="background:#0F172A; border:3px solid #DC2626; border-radius:20px; padding:16px 22px; margin-bottom:20px; box-shadow:0 8px 24px rgba(220, 38, 38, 0.35);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <div style="display:flex; align-items:center; gap:14px;">
+                <span style="font-size:44px; animation:bobCorner 2s infinite alternate;">👾</span>
+                <div>
+                  <div style="font-family:'Fredoka', cursive; font-size:22px; font-weight:900; color:#FCA5A5;">JEFE: THANOS & ENDER DRAGON</div>
+                  <div style="font-size:13px; font-weight:800; color:#EF4444;" id="bossHpLabel">VIDA DEL JEFE: 100 / 100 HP</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-family:'Fredoka', cursive; font-size:22px; font-weight:900; color:#FACC15;" id="speedStreak">x1 🔥</div>
+                <div style="font-size:26px; font-weight:900; color:#EF4444;" id="speedTimer">60s</div>
+              </div>
+            </div>
+            <!-- Barra de Vida del Jefe -->
+            <div style="width:100%; height:16px; background:#450A0A; border-radius:8px; overflow:hidden; border:2px solid #EF4444;">
+              <div id="bossHpFill" style="width:100%; height:100%; background:linear-gradient(90deg, #DC2626, #F87171); transition:width 0.3s ease; box-shadow:0 0 10px #DC2626;"></div>
+            </div>
           </div>
 
-          <div style="text-align:center; margin:30px 0;">
-            <div style="font-family:'Fredoka'; font-size:52px; font-weight:700; color:var(--text-dark);" id="speedOperationText">
+          <div style="text-align:center; margin:24px 0;">
+            <div style="font-family:'Fredoka'; font-size:52px; font-weight:900; color:#1E1B4B; background:#FEF2F2; border:3px dashed #DC2626; border-radius:22px; padding:16px 32px; display:inline-block; box-shadow:0 6px 18px rgba(220, 38, 38, 0.15);" id="speedOperationText">
               7 × 8 = ?
             </div>
           </div>
