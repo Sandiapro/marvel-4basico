@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <!-- Minecraft Emerald Background -->
+  <circle cx="60" cy="60" r="56" fill="#15803D" stroke="#86EFAC" stroke-width="4"/>
+
+  <!-- Alex Pixel Head Cube -->
+  <rect x="28" y="24" width="64" height="64" fill="#E8B589" stroke="#000000" stroke-width="3"/>
+
+  <!-- Long Vibrant Orange Hair Blocks -->
+  <rect x="28" y="24" width="64" height="20" fill="#B45309"/>
+  <rect x="28" y="44" width="14" height="28" fill="#B45309"/>
+  <!-- Left Side Braid / Side Hair -->
+  <rect x="24" y="60" width="10" height="26" fill="#D97706"/>
+  <rect x="80" y="44" width="12" height="16" fill="#B45309"/>
+
+  <!-- Emerald Green Pixel Eyes -->
+  <rect x="42" y="52" width="14" height="8" fill="#FFFFFF"/>
+  <rect x="46" y="52" width="8" height="8" fill="#15803D"/>
+  <rect x="68" y="52" width="14" height="8" fill="#FFFFFF"/>
+  <rect x="68" y="52" width="8" height="8" fill="#15803D"/>
+
+  <!-- Pixel Nose & Mouth -->
+  <rect x="54" y="60" width="12" height="6" fill="#C28254"/>
+  <rect x="52" y="68" width="16" height="6" fill="#884422"/>
+
+  <!-- Olive Green Tunic Shirt -->
+  <rect x="32" y="88" width="56" height="22" fill="#4D7C0F" stroke="#365314" stroke-width="2"/>
+  <!-- Belt & Trim -->
+  <rect x="50" y="88" width="20" height="10" fill="#65A30D"/>
+
+  <!-- Diamond Pickaxe Mini Badge -->
+  <rect x="76" y="74" width="6" height="6" fill="#22D3EE"/>
+  <rect x="82" y="68" width="6" height="6" fill="#22D3EE"/>
+  <rect x="88" y="62" width="6" height="6" fill="#A5F3FC"/>
+  <rect x="80" y="80" width="6" height="6" fill="#78350F"/>
+</svg>

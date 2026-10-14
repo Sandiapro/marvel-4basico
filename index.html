@@ -51,7 +51,7 @@
       z-index: 9999;
     }
 
-    /* Fondo animado con Bloques flotantes y Símbolos */
+    /* Fondo animado con Tablas de Multiplicar Flotantes */
     .hero-bg {
       position: fixed;
       inset: 0;
@@ -60,18 +60,166 @@
       overflow: hidden;
     }
 
-    .floating-item {
+    .floating-item.math-pill {
       position: absolute;
       user-select: none;
-      animation: floatElement 12s infinite linear;
-      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4));
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+      font-family: 'Fredoka', cursive, 'Nunito', sans-serif;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      white-space: nowrap;
+      will-change: transform, opacity;
+      pointer-events: none;
     }
 
-    @keyframes floatElement {
-      0% { transform: translateY(110vh) rotate(0deg) scale(0.85); opacity: 0; }
-      15% { opacity: 0.6; }
-      85% { opacity: 0.6; }
-      100% { transform: translateY(-15vh) rotate(360deg) scale(1.15); opacity: 0; }
+    .math-pill .math-expr {
+      color: inherit;
+      font-weight: 800;
+    }
+
+    .math-pill .math-times {
+      color: #FDE047;
+      font-weight: 900;
+      margin: 0 2px;
+      text-shadow: 0 0 8px rgba(250, 204, 21, 0.8);
+    }
+
+    .math-pill .math-eq {
+      color: rgba(255, 255, 255, 0.95);
+      font-weight: 900;
+      margin: 0 2px;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+    }
+
+    .math-pill .math-res {
+      background: transparent !important;
+      color: #FDE047;
+      font-weight: 900;
+      padding: 0;
+      border: none !important;
+      box-shadow: none !important;
+      text-shadow: 0 0 10px rgba(250, 204, 21, 0.9), 0 2px 4px #000;
+    }
+
+    /* Variantes de Color de Texto Heroicas y Minecraft (Sin fondos) */
+    .math-theme-red {
+      color: #FCA5A5;
+      text-shadow: 0 0 10px #EF4444, 0 0 20px rgba(239, 68, 68, 0.6), 0 2px 5px rgba(0,0,0,0.9);
+    }
+
+    .math-theme-diamond {
+      color: #67E8F9;
+      text-shadow: 0 0 10px #06B6D4, 0 0 20px rgba(34, 211, 238, 0.6), 0 2px 5px rgba(0,0,0,0.9);
+    }
+    .math-theme-diamond .math-res {
+      color: #A5F3FC;
+      text-shadow: 0 0 12px #22D3EE, 0 2px 5px #000;
+    }
+
+    .math-theme-green {
+      color: #86EFAC;
+      text-shadow: 0 0 10px #10B981, 0 0 20px rgba(16, 185, 129, 0.6), 0 2px 5px rgba(0,0,0,0.9);
+    }
+    .math-theme-green .math-res {
+      color: #BBF7D0;
+      text-shadow: 0 0 12px #34D399, 0 2px 5px #000;
+    }
+
+    .math-theme-purple {
+      color: #DDD6FE;
+      text-shadow: 0 0 10px #A855F7, 0 0 20px rgba(168, 85, 247, 0.6), 0 2px 5px rgba(0,0,0,0.9);
+    }
+
+    .math-theme-gold {
+      color: #FEF08A;
+      text-shadow: 0 0 10px #F59E0B, 0 0 20px rgba(245, 158, 11, 0.6), 0 2px 5px rgba(0,0,0,0.9);
+    }
+    .math-theme-gold .math-res {
+      color: #FFFFFF;
+      text-shadow: 0 0 12px #FDE047, 0 2px 5px #000;
+    }
+
+    .math-theme-blue {
+      color: #BFDBFE;
+      text-shadow: 0 0 10px #3B82F6, 0 0 20px rgba(59, 130, 246, 0.6), 0 2px 5px rgba(0,0,0,0.9);
+    }
+
+    .math-theme-rose {
+      color: #FDA4AF;
+      text-shadow: 0 0 10px #F43F5E, 0 0 20px rgba(244, 63, 94, 0.6), 0 2px 5px rgba(0,0,0,0.9);
+    }
+
+    .math-theme-lime {
+      color: #D9F99D;
+      text-shadow: 0 0 10px #84CC16, 0 0 20px rgba(132, 204, 22, 0.6), 0 2px 5px rgba(0,0,0,0.9);
+    }
+
+    /* Animaciones hacia arriba con balanceo suave y natural */
+    @keyframes floatMathLeft {
+      0% {
+        transform: translateY(112vh) translateX(0px) rotate(-5deg) scale(0.9);
+        opacity: 0;
+      }
+      8% {
+        opacity: 0.9;
+      }
+      50% {
+        transform: translateY(50vh) translateX(22px) rotate(4deg) scale(1);
+      }
+      92% {
+        opacity: 0.9;
+      }
+      100% {
+        transform: translateY(-16vh) translateX(-18px) rotate(-4deg) scale(1.05);
+        opacity: 0;
+      }
+    }
+
+    @keyframes floatMathRight {
+      0% {
+        transform: translateY(112vh) translateX(0px) rotate(5deg) scale(0.9);
+        opacity: 0;
+      }
+      8% {
+        opacity: 0.9;
+      }
+      50% {
+        transform: translateY(50vh) translateX(-22px) rotate(-4deg) scale(1);
+      }
+      92% {
+        opacity: 0.9;
+      }
+      100% {
+        transform: translateY(-16vh) translateX(18px) rotate(4deg) scale(1.05);
+        opacity: 0;
+      }
+    }
+
+    @keyframes floatMathCenter {
+      0% {
+        transform: translateY(112vh) translateX(0px) rotate(-2deg) scale(0.92);
+        opacity: 0;
+      }
+      8% {
+        opacity: 0.88;
+      }
+      50% {
+        transform: translateY(50vh) translateX(12px) rotate(3deg) scale(1);
+      }
+      92% {
+        opacity: 0.88;
+      }
+      100% {
+        transform: translateY(-16vh) translateX(-12px) rotate(-2deg) scale(1.04);
+        opacity: 0;
+      }
     }
 
     /* =========================================================================
@@ -717,22 +865,22 @@
               <span class="avatar-role">Poder Rayo</span>
             </div>
 
-            <!-- 5. Hulk -->
-            <div class="avatar-card" data-id="hulk" data-sound="hulk" data-name="Hulk Aplasta Tablas" data-quote="¡HULK APLASTA DUDAS! ¡Hulk es el más fuerte de las matemáticas!">
+            <!-- 5. Ghost-Spider (Spider-Gwen) -->
+            <div class="avatar-card" data-id="gwen" data-sound="thwip" data-name="Ghost-Spider" data-quote="¡Sentido arácnido interdimensional activado! ¡Vamos a saltar y resolver todas las tablas!">
               <div class="avatar-icon-wrap">
-                <img src="Sistema/IMAGEN/avatar_hulk.svg" alt="Hulk Aplasta Tablas">
+                <img src="Sistema/IMAGEN/avatar_gwen.svg" alt="Ghost-Spider">
               </div>
-              <span class="avatar-name">Hulk Matemático</span>
-              <span class="avatar-role">Fuerza Bruta</span>
+              <span class="avatar-name">Ghost-Spider</span>
+              <span class="avatar-role">Telaraña Ágil</span>
             </div>
 
-            <!-- 6. Pantera Negra -->
-            <div class="avatar-card" data-id="pantera" data-sound="wakanda" data-name="Pantera Ágil" data-quote="¡YIBAMBE! ¡Wakanda por siempre! ¡Nuestras garras de vibranium resolverán cada cálculo!">
+            <!-- 6. Capitana Marvel -->
+            <div class="avatar-card" data-id="capitanamarvel" data-sound="thunder" data-name="Capitana Marvel" data-quote="¡Más alto, más lejos, más rápido! ¡Nuestra energía cósmica multiplicará la victoria!">
               <div class="avatar-icon-wrap">
-                <img src="Sistema/IMAGEN/avatar_pantera.svg" alt="Pantera Ágil">
+                <img src="Sistema/IMAGEN/avatar_capitanamarvel.svg" alt="Capitana Marvel">
               </div>
-              <span class="avatar-name">Pantera Ágil</span>
-              <span class="avatar-role">Vibranium</span>
+              <span class="avatar-name">Capitana Marvel</span>
+              <span class="avatar-role">Poder Binario ⚡</span>
             </div>
 
             <!-- 7. Steve Minecraft -->
@@ -744,13 +892,13 @@
               <span class="avatar-role">Minecraft XP</span>
             </div>
 
-            <!-- 8. Creeper Minecraft -->
-            <div class="avatar-card" data-id="creeper" data-sound="creeper" data-name="Creeper Verde" data-quote="¡Tssssssss... ¡BOOM! ¡Una explosión verde de aciertos y esmeraldas!">
+            <!-- 8. Alex Minecraft -->
+            <div class="avatar-card" data-id="alex" data-sound="sword" data-name="Alex Aventurera" data-quote="¡Espada de diamante y arco encantado listos! ¡A conquistar todas las tablas en el multiverso!">
               <div class="avatar-icon-wrap">
-                <img src="Sistema/IMAGEN/avatar_creeper.svg" alt="Creeper Verde">
+                <img src="Sistema/IMAGEN/avatar_alex.svg" alt="Alex Aventurera">
               </div>
-              <span class="avatar-name">Creeper Verde</span>
-              <span class="avatar-role">Esmeralda 💎</span>
+              <span class="avatar-name">Alex Aventurera</span>
+              <span class="avatar-role">Supervivencia 💎</span>
             </div>
           </div>
 
@@ -793,25 +941,72 @@
   <!-- Sonidos y Script Principal -->
   <script src="Sistema/JS/sound.js"></script>
   <script>
-    // Generar partículas flotantes estilo Marvel & Minecraft
-    const heroElements = [
-      'Sistema/IMAGEN/escudo_marvel.svg',
-      'Sistema/IMAGEN/bloque_minecraft.svg',
-      'Sistema/IMAGEN/bloque_diamante.svg',
-      'Sistema/IMAGEN/reactor_arc.svg',
-      'Sistema/IMAGEN/espada_diamante.svg',
-      'Sistema/IMAGEN/guantelete.svg'
+    // Generar tablas de multiplicar flotantes (estilo heroico Marvel & Minecraft)
+    const tablasMultiplicar = [
+      { a: 2, b: 4 }, { a: 2, b: 7 }, { a: 2, b: 8 }, { a: 2, b: 9 },
+      { a: 3, b: 3 }, { a: 3, b: 6 }, { a: 3, b: 7 }, { a: 3, b: 8 }, { a: 3, b: 9 },
+      { a: 4, b: 4 }, { a: 4, b: 6 }, { a: 4, b: 7 }, { a: 4, b: 8 }, { a: 4, b: 9 },
+      { a: 5, b: 5 }, { a: 5, b: 6 }, { a: 5, b: 7 }, { a: 5, b: 8 }, { a: 5, b: 9 },
+      { a: 6, b: 4 }, { a: 6, b: 6 }, { a: 6, b: 7 }, { a: 6, b: 8 }, { a: 6, b: 9 },
+      { a: 7, b: 4 }, { a: 7, b: 6 }, { a: 7, b: 7 }, { a: 7, b: 8 }, { a: 7, b: 9 },
+      { a: 8, b: 4 }, { a: 8, b: 6 }, { a: 8, b: 7 }, { a: 8, b: 8 }, { a: 8, b: 9 },
+      { a: 9, b: 3 }, { a: 9, b: 5 }, { a: 9, b: 6 }, { a: 9, b: 7 }, { a: 9, b: 8 }, { a: 9, b: 9 },
+      { a: 10, b: 4 }, { a: 10, b: 6 }, { a: 10, b: 8 }, { a: 10, b: 10 }
     ];
+
+    const themes = [
+      'math-theme-red',
+      'math-theme-diamond',
+      'math-theme-green',
+      'math-theme-purple',
+      'math-theme-gold',
+      'math-theme-blue',
+      'math-theme-rose',
+      'math-theme-lime'
+    ];
+
+    const animNames = ['floatMathLeft', 'floatMathRight', 'floatMathCenter'];
     const bgContainer = document.getElementById('heroBg');
 
-    for (let i = 0; i < 20; i++) {
-      const el = document.createElement('img');
-      el.src = heroElements[i % heroElements.length];
-      el.className = 'floating-item';
-      el.style.left = Math.random() * 94 + '%';
-      el.style.width = (Math.random() * 26 + 32) + 'px';
-      el.style.animationDuration = (Math.random() * 8 + 8) + 's';
-      el.style.animationDelay = (Math.random() * 8) + 's';
+    // Mezclar las multiplicaciones para máxima variedad
+    const shuffledTablas = [...tablasMultiplicar].sort(() => Math.random() - 0.5);
+    const count = 26;
+
+    for (let i = 0; i < count; i++) {
+      const item = shuffledTablas[i % shuffledTablas.length];
+      const res = item.a * item.b;
+
+      const el = document.createElement('div');
+      const themeClass = themes[i % themes.length];
+      el.className = `floating-item math-pill ${themeClass}`;
+      
+      el.innerHTML = `
+        <span class="math-expr">${item.a} <span class="math-times">×</span> ${item.b}</span>
+        <span class="math-eq">=</span>
+        <span class="math-res">${res}</span>
+      `;
+
+      // Posicionamiento horizontal bien distribuido a lo ancho de la pantalla
+      const colWidth = 92 / count;
+      const leftPos = (i * colWidth) + (Math.random() * (colWidth * 0.7));
+      el.style.left = `${Math.min(92, Math.max(2, leftPos)).toFixed(1)}%`;
+
+      // Tamaño de letra variado para dar sensación de profundidad
+      const fontSize = (Math.random() * 3.5 + 15).toFixed(1);
+      el.style.fontSize = `${fontSize}px`;
+
+      // Duración y tipo de animación (entre 10s y 16s)
+      const duration = (Math.random() * 6 + 10).toFixed(1);
+      const anim = animNames[i % animNames.length];
+      el.style.animationName = anim;
+      el.style.animationDuration = `${duration}s`;
+      el.style.animationTimingFunction = 'linear';
+      el.style.animationIterationCount = 'infinite';
+
+      // Delays negativos para que al abrir la página ya haya tablas flotando en toda la pantalla
+      const delay = -(Math.random() * parseFloat(duration)).toFixed(2);
+      el.style.animationDelay = `${delay}s`;
+
       bgContainer.appendChild(el);
     }
 
@@ -839,11 +1034,19 @@
         window.sound.playWebThwip();
       } else if (avatarId === 'capitan') {
         window.sound.playCapShieldRing();
-      } else if (avatarId === 'creeper') {
-        window.sound.playCreeperExplode();
+      } else if (avatarId === 'gwen') {
+        window.sound.playWebThwip();
+        setTimeout(() => window.sound.playJarvisChime(), 100);
+      } else if (avatarId === 'capitanamarvel') {
+        window.sound.playThunderClap();
       } else if (avatarId === 'steve') {
         window.sound.playSwordHit();
         setTimeout(() => window.sound.playMinecraftXp(), 100);
+      } else if (avatarId === 'alex') {
+        window.sound.playSwordHit();
+        setTimeout(() => window.sound.playMinecraftXp(), 100);
+      } else if (avatarId === 'creeper') {
+        window.sound.playCreeperExplode();
       } else {
         window.sound.playMinecraftPop();
       }
@@ -863,9 +1066,19 @@
       utter.lang = 'es-ES';
 
       // Modulación dramática y potente de tono (pitch) y velocidad (rate)
-      if (avatarId === 'hulk') {
-        utter.pitch = 0.42; // Súper grave, titánico y monstruoso
-        utter.rate = 0.85;  // Pausado y contundente
+      const esFemenino = (avatarId === 'gwen' || avatarId === 'capitanamarvel' || avatarId === 'alex');
+
+      if (avatarId === 'gwen') {
+        utter.pitch = 1.35; // Voz juvenil femenina brillante, ágil y divertida
+        utter.rate = 1.10;
+        utter.volume = 1.0;
+      } else if (avatarId === 'capitanamarvel') {
+        utter.pitch = 1.15; // Voz superheroica femenina poderosa, decidida y cósmica
+        utter.rate = 1.02;
+        utter.volume = 1.0;
+      } else if (avatarId === 'alex') {
+        utter.pitch = 1.25; // Voz aventurera femenina entusiasta y valiente
+        utter.rate = 1.05;
         utter.volume = 1.0;
       } else if (avatarId === 'thor') {
         utter.pitch = 0.65; // Profundo como el trueno de Asgard
@@ -875,10 +1088,6 @@
         utter.pitch = 1.22; // Ágil, juvenil, divertido y rápido
         utter.rate = 1.10;
         utter.volume = 1.0;
-      } else if (avatarId === 'pantera') {
-        utter.pitch = 0.88; // Firme, regio y marcial
-        utter.rate = 0.98;
-        utter.volume = 1.0;
       } else if (avatarId === 'ironman') {
         utter.pitch = 0.95; // Tecnológico, seguro y brillante
         utter.rate = 1.05;
@@ -887,22 +1096,27 @@
         utter.pitch = 0.90; // Voz de líder patriótico y decidido
         utter.rate = 0.96;
         utter.volume = 1.0;
-      } else if (avatarId === 'creeper') {
-        utter.pitch = 1.30; // Agudo, silbante y explosivo
-        utter.rate = 1.15;
-        utter.volume = 1.0;
       } else if (avatarId === 'steve') {
         utter.pitch = 1.08; // Aventurero Minecraft entusiasta
         utter.rate = 1.04;
         utter.volume = 1.0;
       }
 
-      // Buscar la voz española más expresiva instalada
+      // Buscar la mejor voz española (priorizando femeninas para personajes femeninos)
       const voices = window.speechSynthesis.getVoices();
-      const mejorVoz = voices.find(v => 
-        (v.lang.startsWith('es') || v.lang.includes('ES') || v.lang.includes('MX')) &&
-        (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Sabina') || v.name.includes('Raul') || v.name.includes('Helena') || v.name.includes('Alvaro') || v.name.includes('Jorge'))
-      ) || voices.find(v => v.lang.startsWith('es'));
+      let mejorVoz = null;
+
+      if (esFemenino) {
+        mejorVoz = voices.find(v => 
+          (v.lang.startsWith('es') || v.lang.includes('ES') || v.lang.includes('MX')) &&
+          (v.name.includes('Helena') || v.name.includes('Sabina') || v.name.includes('Laura') || v.name.includes('Marta') || v.name.includes('Monica') || v.name.includes('Paulina') || v.name.includes('Zira') || v.name.includes('Female'))
+        ) || voices.find(v => v.lang.startsWith('es'));
+      } else {
+        mejorVoz = voices.find(v => 
+          (v.lang.startsWith('es') || v.lang.includes('ES') || v.lang.includes('MX')) &&
+          (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Raul') || v.name.includes('Alvaro') || v.name.includes('Jorge') || v.name.includes('Male'))
+        ) || voices.find(v => v.lang.startsWith('es'));
+      }
 
       if (mejorVoz) utter.voice = mejorVoz;
 

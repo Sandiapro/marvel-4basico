@@ -24,8 +24,10 @@ const AppState = {
   bubbleGame: {
     active: false,
     timer: null,
-    timeLeft: 30,
+    timeLeft: 35,
     score: 0,
+    vidas: 3,
+    maxVidas: 3,
     currentQuestion: null
   },
   builderGame: {
@@ -43,7 +45,12 @@ const AppState = {
     timeLeft: 60,
     score: 0,
     streak: 0,
-    currentProblem: null
+    vidas: 3,
+    maxVidas: 3,
+    currentProblem: null,
+    bossHp: 100,
+    bossMaxHp: 100,
+    bossStage: 'thanos'
   },
 
   // Estado del Ensayo SIMCE
@@ -66,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
   inicializarSimce();
   renderizarProgresoYLogros();
   inicializarEfectosParticulas();
+  initMenuInteractiveBackground();
 });
 
 // Carga o verificación del estudiante
@@ -98,7 +106,7 @@ function cargarPerfil() {
         AppState.perfil.logrosDesbloqueados = ["primer_paso"];
       }
       // Asegurar que el avatar activo pertenezca a la colección Marvel o Minecraft
-      const avataresValidos = ['spiderman', 'ironman', 'capitan', 'thor', 'hulk', 'pantera', 'steve', 'creeper'];
+      const avataresValidos = ['spiderman', 'ironman', 'capitan', 'thor', 'hulk', 'pantera', 'steve', 'creeper', 'gwen', 'capitanamarvel', 'alex'];
       if (!AppState.perfil.avatarId || !avataresValidos.includes(AppState.perfil.avatarId)) {
         AppState.perfil.avatarImg = "IMAGEN/avatar_spiderman.svg";
         AppState.perfil.avatarNombre = "Spider-Multi";
@@ -711,32 +719,208 @@ function onMemoryCardClick(cardEl, item) {
   }
 }
 
-/* 2. ATRAPA EL RESULTADO (BURBUJAS) */
+/* 2. ATRAPA EL RESULTADO (GEMAS DEL INFINITO & ORBES XP) */
+const INFINITY_GEMS_DATA = [
+  {
+    name: "Gema del Poder",
+    color: "#9333EA",
+    svg: `<svg class="gem-facet-svg" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="powGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#C084FC"/>
+          <stop offset="50%" stop-color="#9333EA"/>
+          <stop offset="100%" stop-color="#581C87"/>
+        </linearGradient>
+      </defs>
+      <polygon points="50,6 88,24 94,62 50,94 6,62 12,24" fill="url(#powGrad)" stroke="#E9D5FF" stroke-width="2"/>
+      <polygon points="50,6 88,24 72,36 50,22" fill="#D8B4FE" opacity="0.7"/>
+      <polygon points="88,24 94,62 76,58 72,36" fill="#7E22CE" opacity="0.75"/>
+      <polygon points="94,62 50,94 50,72 76,58" fill="#581C87" opacity="0.9"/>
+      <polygon points="50,94 6,62 24,58 50,72" fill="#3B0764" opacity="0.9"/>
+      <polygon points="6,62 12,24 28,36 24,58" fill="#7E22CE" opacity="0.75"/>
+      <polygon points="12,24 50,6 50,22 28,36" fill="#E9D5FF" opacity="0.6"/>
+      <polygon points="50,22 72,36 76,58 50,72 24,58 28,36" fill="#A855F7" stroke="#F3E8FF" stroke-width="1.5"/>
+    </svg>`
+  },
+  {
+    name: "Gema del Espacio",
+    color: "#0284C7",
+    svg: `<svg class="gem-facet-svg" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="spcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#7DD3FC"/>
+          <stop offset="50%" stop-color="#0284C7"/>
+          <stop offset="100%" stop-color="#0C4A6E"/>
+        </linearGradient>
+      </defs>
+      <polygon points="50,8 92,50 50,92 8,50" fill="url(#spcGrad)" stroke="#BAE6FD" stroke-width="2"/>
+      <polygon points="50,8 92,50 68,50 50,30" fill="#BAE6FD" opacity="0.75"/>
+      <polygon points="92,50 50,92 50,70 68,50" fill="#0369A1" opacity="0.8"/>
+      <polygon points="50,92 8,50 32,50 50,70" fill="#0C4A6E" opacity="0.9"/>
+      <polygon points="8,50 50,8 50,30 32,50" fill="#E0F2FE" opacity="0.7"/>
+      <polygon points="50,30 68,50 50,70 32,50" fill="#38BDF8" stroke="#FFFFFF" stroke-width="1.5"/>
+    </svg>`
+  },
+  {
+    name: "Gema de la Realidad",
+    color: "#DC2626",
+    svg: `<svg class="gem-facet-svg" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="realGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#FCA5A5"/>
+          <stop offset="50%" stop-color="#DC2626"/>
+          <stop offset="100%" stop-color="#7F1D1D"/>
+        </linearGradient>
+      </defs>
+      <polygon points="26,10 74,10 94,36 50,94 6,36" fill="url(#realGrad)" stroke="#FECDD3" stroke-width="2"/>
+      <polygon points="26,10 74,10 64,28 36,28" fill="#FCA5A5" opacity="0.75"/>
+      <polygon points="74,10 94,36 68,44 64,28" fill="#EF4444" opacity="0.6"/>
+      <polygon points="94,36 50,94 50,56 68,44" fill="#991B1B" opacity="0.85"/>
+      <polygon points="50,94 6,36 32,44 50,56" fill="#7F1D1D" opacity="0.9"/>
+      <polygon points="6,36 26,10 36,28 32,44" fill="#F87171" opacity="0.6"/>
+      <polygon points="36,28 64,28 68,44 50,56 32,44" fill="#DC2626" stroke="#FFE4E6" stroke-width="1.5"/>
+    </svg>`
+  },
+  {
+    name: "Gema del Tiempo",
+    color: "#059669",
+    svg: `<svg class="gem-facet-svg" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="timeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#6EE7B7"/>
+          <stop offset="50%" stop-color="#059669"/>
+          <stop offset="100%" stop-color="#064E3B"/>
+        </linearGradient>
+      </defs>
+      <polygon points="30,8 70,8 92,30 92,70 70,92 30,92 8,70 8,30" fill="url(#timeGrad)" stroke="#A7F3D0" stroke-width="2"/>
+      <polygon points="30,8 70,8 62,24 38,24" fill="#A7F3D0" opacity="0.7"/>
+      <polygon points="70,8 92,30 76,38 62,24" fill="#34D399" opacity="0.6"/>
+      <polygon points="92,30 92,70 76,62 76,38" fill="#047857" opacity="0.75"/>
+      <polygon points="92,70 70,92 62,76 76,62" fill="#065F46" opacity="0.85"/>
+      <polygon points="70,92 30,92 38,76 62,76" fill="#064E3B" opacity="0.9"/>
+      <polygon points="30,92 8,70 24,62 38,76" fill="#065F46" opacity="0.85"/>
+      <polygon points="8,70 8,30 24,38 24,62" fill="#047857" opacity="0.75"/>
+      <polygon points="8,30 30,8 38,24 24,38" fill="#6EE7B7" opacity="0.6"/>
+      <polygon points="38,24 62,24 76,38 76,62 62,76 38,76 24,62 24,38" fill="#10B981" stroke="#D1FAE5" stroke-width="1.5"/>
+    </svg>`
+  },
+  {
+    name: "Gema de la Mente",
+    color: "#D97706",
+    svg: `<svg class="gem-facet-svg" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="mindGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#FDE047"/>
+          <stop offset="50%" stop-color="#EAB308"/>
+          <stop offset="100%" stop-color="#854D0E"/>
+        </linearGradient>
+      </defs>
+      <polygon points="50,6 94,34 76,94 24,94 6,34" fill="url(#mindGrad)" stroke="#FEF08A" stroke-width="2"/>
+      <polygon points="50,6 94,34 72,40 50,24" fill="#FEF08A" opacity="0.7"/>
+      <polygon points="94,34 76,94 62,74 72,40" fill="#CA8A04" opacity="0.8"/>
+      <polygon points="76,94 24,94 38,74 62,74" fill="#713F12" opacity="0.9"/>
+      <polygon points="24,94 6,34 28,40 38,74" fill="#A16207" opacity="0.85"/>
+      <polygon points="6,34 50,6 50,24 28,40" fill="#FACC15" opacity="0.65"/>
+      <polygon points="50,24 72,40 62,74 38,74 28,40" fill="#FBBF24" stroke="#FFFFFF" stroke-width="1.5"/>
+    </svg>`
+  },
+  {
+    name: "Diamante Minecraft",
+    color: "#0891B2",
+    svg: `<svg class="gem-facet-svg" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="mcDiaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#A5F3FC"/>
+          <stop offset="40%" stop-color="#22D3EE"/>
+          <stop offset="100%" stop-color="#0E7490"/>
+        </linearGradient>
+      </defs>
+      <polygon points="28,14 72,14 90,38 50,92 10,38" fill="url(#mcDiaGrad)" stroke="#CFFAFE" stroke-width="2.5"/>
+      <polygon points="28,14 72,14 62,32 38,32" fill="#E0F2FE" opacity="0.85"/>
+      <polygon points="72,14 90,38 68,44 62,32" fill="#38BDF8" opacity="0.65"/>
+      <polygon points="90,38 50,92 50,56 68,44" fill="#0369A1" opacity="0.9"/>
+      <polygon points="50,92 10,38 32,44 50,56" fill="#0C4A6E" opacity="0.9"/>
+      <polygon points="10,38 28,14 38,32 32,44" fill="#67E8F9" opacity="0.75"/>
+      <polygon points="38,32 62,32 68,44 50,56 32,44" fill="#06B6D4" stroke="#FFFFFF" stroke-width="1.5"/>
+    </svg>`
+  }
+];
+
 function iniciarJuegoBurbujas() {
   const bg = AppState.bubbleGame;
   bg.score = 0;
-  bg.timeLeft = 30;
-  document.getElementById('bubbleScore').innerText = bg.score;
-  document.getElementById('bubbleTimer').innerText = `${bg.timeLeft}s`;
+  bg.timeLeft = 35;
+  bg.vidas = 3;
+  bg.maxVidas = 3;
+
+  const elScore = document.getElementById('bubbleScore');
+  const elTimer = document.getElementById('bubbleTimer');
+  const elLives = document.getElementById('bubbleLives');
+  const elPenalty = document.getElementById('bubblePenalty');
+
+  if (elScore) elScore.innerText = bg.score;
+  if (elTimer) elTimer.innerText = `${bg.timeLeft}s`;
+  if (elLives) elLives.innerText = '❤️❤️❤️';
+  if (elPenalty) elPenalty.style.display = 'none';
 
   if (bg.timer) clearInterval(bg.timer);
   bg.timer = setInterval(() => {
     bg.timeLeft--;
-    document.getElementById('bubbleTimer').innerText = `${bg.timeLeft}s`;
+    if (elTimer) elTimer.innerText = `${bg.timeLeft}s`;
     if (bg.timeLeft <= 0) {
       clearInterval(bg.timer);
-      window.sound.playMarvelFanfare();
-      lanzarSerpentinasYBrillos();
-      sumarRecompensa(bg.score * 5, Math.floor(bg.score / 2));
-      if (bg.score >= 5) desbloquearLogro("atrapa_burbujas");
-      mostrarModalCelebracion(
-        "🎈 ¡MISIÓN CUMPLIDA!",
-        `¡Puntaje total: ${bg.score} aciertos con reflejos heroicos! Ganaste +${bg.score * 5} XP.`
-      );
+      finalizarJuegoBurbujas(false);
     }
   }, 1000);
 
   siguientePreguntaBurbujas();
+}
+
+function finalizarJuegoBurbujas(sinVidas = false) {
+  const bg = AppState.bubbleGame;
+  if (bg.timer) clearInterval(bg.timer);
+
+  if (sinVidas) {
+    window.sound.playError();
+    sumarRecompensa(bg.score * 3, Math.floor(bg.score / 3));
+    mostrarModalCelebracion(
+      "💔 ¡TE QUEDASTE SIN VIDAS O TIEMPO!",
+      `<div style="text-align:center;">
+        <div style="font-size:44px; margin-bottom:10px;">⚡💥💔</div>
+        <p style="font-size:20px; font-weight:800; color:#EF4444; margin-bottom:8px;">
+          ¡Cuidado, héroe! Las gemas inestables drenaron tu energía.
+        </p>
+        <p style="font-size:16px; font-weight:700; color:#4B5563; margin-bottom:14px;">
+          Cada fallo resta 1 vida y acelera el tiempo (-4s). Lograste recolectar <strong>${bg.score}</strong> gemas cósmicas. ¡Vuelve a intentarlo!
+        </p>
+        <div style="display:inline-flex; gap:12px; background:#FEF2F2; border:2px solid #FCA5A5; border-radius:999px; padding:8px 20px; font-weight:900; color:#991B1B;">
+          <span>+${bg.score * 3} XP</span>
+        </div>
+      </div>`,
+      true
+    );
+  } else {
+    window.sound.playMarvelFanfare();
+    lanzarSerpentinasYBrillos();
+    sumarRecompensa(bg.score * 5, Math.floor(bg.score / 2));
+    if (bg.score >= 5) desbloquearLogro("atrapa_burbujas");
+    mostrarModalCelebracion(
+      "💎 ¡RECOLECCIÓN CÓSMICA FINALIZADA!",
+      `<div style="text-align:center;">
+        <div style="font-size:44px; margin-bottom:10px;">💎✨🪐</div>
+        <p style="font-size:20px; font-weight:800; color:#059669; margin-bottom:8px;">
+          ¡Puntaje total: ${bg.score} gemas cósmicas aseguradas!
+        </p>
+        <p style="font-size:15px; font-weight:700; color:#4B5563; margin-bottom:14px;">
+          ¡Tu agilidad con las multiplicaciones ha protegido el universo!
+        </p>
+        <div style="display:inline-flex; gap:12px; background:#ECFDF5; border:2px solid #6EE7B7; border-radius:999px; padding:8px 20px; font-weight:900; color:#065F46;">
+          <span>+${bg.score * 5} XP</span> • <span>+${Math.floor(bg.score / 2)} ⭐</span>
+        </div>
+      </div>`,
+      true
+    );
+  }
 }
 
 function siguientePreguntaBurbujas() {
@@ -744,7 +928,7 @@ function siguientePreguntaBurbujas() {
   const b = Math.floor(Math.random() * 8) + 2;
   const correcta = a * b;
 
-  document.getElementById('bubbleTargetText').innerText = `${a} × ${b}`;
+  document.getElementById('bubbleTargetText').innerText = `${a} × ${b} = ?`;
 
   const opciones = new Set([correcta]);
   while (opciones.size < 4) {
@@ -756,31 +940,73 @@ function siguientePreguntaBurbujas() {
   const container = document.getElementById('bubblesContainer');
   container.innerHTML = '';
 
-  Array.from(opciones).sort(() => Math.random() - 0.5).forEach(num => {
-    const bubble = document.createElement('button');
-    bubble.className = 'floating-bubble-btn';
-    bubble.innerText = num;
-    bubble.addEventListener('click', () => {
+  const shuffledGems = [...INFINITY_GEMS_DATA].sort(() => Math.random() - 0.5);
+
+  Array.from(opciones).sort(() => Math.random() - 0.5).forEach((num, idx) => {
+    const gemData = shuffledGems[idx % shuffledGems.length];
+    const gemBtn = document.createElement('button');
+    gemBtn.className = 'infinity-gem-btn';
+    gemBtn.title = gemData.name;
+    gemBtn.innerHTML = `
+      ${gemData.svg}
+      <span class="gem-number-label">${num}</span>
+      <span class="gem-title-pill">${gemData.name}</span>
+    `;
+
+    gemBtn.addEventListener('click', () => {
+      const bg = AppState.bubbleGame;
       if (num === correcta) {
         window.sound.playMinecraftPop();
         window.sound.playMinecraftXp();
-        AppState.bubbleGame.score++;
-        document.getElementById('bubbleScore').innerText = AppState.bubbleGame.score;
-        siguientePreguntaBurbujas();
+        bg.score++;
+        document.getElementById('bubbleScore').innerText = bg.score;
+        gemBtn.style.transform = 'scale(1.4) rotate(15deg)';
+        gemBtn.style.filter = 'brightness(2) drop-shadow(0 0 25px #FDE047)';
+        setTimeout(siguientePreguntaBurbujas, 240);
       } else {
+        // PENALIZACIÓN: Pierde 1 vida y 4 segundos del tiempo
         window.sound.playError();
+        bg.vidas = Math.max(0, bg.vidas - 1);
+        bg.timeLeft = Math.max(0, bg.timeLeft - 4);
+
+        const elLives = document.getElementById('bubbleLives');
+        if (elLives) elLives.innerText = '❤️'.repeat(bg.vidas) + '💔'.repeat(3 - bg.vidas);
+
+        const elTimer = document.getElementById('bubbleTimer');
+        if (elTimer) elTimer.innerText = `${bg.timeLeft}s`;
+
+        const elPenalty = document.getElementById('bubblePenalty');
+        if (elPenalty) {
+          elPenalty.innerText = '-4s! 💥💔';
+          elPenalty.style.display = 'inline';
+          setTimeout(() => { if (elPenalty) elPenalty.style.display = 'none'; }, 900);
+        }
+
+        gemBtn.style.transform = 'translateX(-10px)';
+        gemBtn.style.filter = 'drop-shadow(0 0 15px #EF4444) brightness(0.7)';
+        setTimeout(() => gemBtn.style.transform = 'translateX(10px)', 80);
+        setTimeout(() => {
+          gemBtn.style.transform = '';
+          gemBtn.style.filter = '';
+        }, 180);
+
+        if (bg.vidas <= 0 || bg.timeLeft <= 0) {
+          if (bg.timer) clearInterval(bg.timer);
+          finalizarJuegoBurbujas(true);
+        }
       }
     });
-    container.appendChild(bubble);
+
+    container.appendChild(gemBtn);
   });
 }
 
-/* 3. CONSTRUYE LA MULTIPLICACIÓN (ARREGLO RECTANGULAR) */
+/* 3. MESA DE CRAFTEO STEVE & STARK (BLOQUES AUTÉNTICOS MINECRAFT) */
 const MISIONES_CONSTRUCTOR = [
-  { meta: 18, texto: "Steve necesita apilar 18 bloques de esmeralda en filas y columnas iguales." },
-  { meta: 24, texto: "Iron Man debe ordenar 24 micro-reactores en una matriz de carga." },
-  { meta: 20, texto: "Capitán América necesita formar 20 escudos de entrenamiento." },
-  { meta: 36, texto: "La armería de Wakanda necesita 36 lingotes de vibranium." }
+  { meta: 18, texto: "Steve necesita apilar 18 bloques de pasto y tierra en filas y columnas iguales.", bloque: "IMAGEN/bloque_minecraft.svg" },
+  { meta: 24, texto: "Iron Man debe ordenar 24 bloques de diamante en una matriz de reactor.", bloque: "IMAGEN/bloque_diamante.svg" },
+  { meta: 20, texto: "Capitán América necesita forjar 20 bloques de entrenamiento en filas parejas.", bloque: "IMAGEN/bloque_minecraft.svg" },
+  { meta: 36, texto: "La armería de Wakanda necesita 36 bloques de diamante para armaduras.", bloque: "IMAGEN/bloque_diamante.svg" }
 ];
 
 function iniciarJuegoConstructor() {
@@ -825,14 +1051,18 @@ function actualizarGridConstructor() {
   const grid = document.getElementById('builderGridDisplay');
   grid.innerHTML = '';
 
+  const mision = MISIONES_CONSTRUCTOR[bg.puzzleIndex % MISIONES_CONSTRUCTOR.length];
+  const blockImgSrc = mision.bloque || 'IMAGEN/bloque_minecraft.svg';
+
   for (let r = 0; r < bg.rows; r++) {
     const rowEl = document.createElement('div');
     rowEl.className = 'builder-row';
     for (let c = 0; c < bg.cols; c++) {
-      const dot = document.createElement('div');
-      dot.className = 'builder-item-dot';
-      dot.innerText = '🟩';
-      rowEl.appendChild(dot);
+      const itemEl = document.createElement('div');
+      itemEl.className = 'mc-block-grid-item';
+      itemEl.title = `Bloque (${r + 1}, ${c + 1})`;
+      itemEl.innerHTML = `<img src="${blockImgSrc}" alt="Bloque Minecraft 3D" class="mc-block-grid-img">`;
+      rowEl.appendChild(itemEl);
     }
     grid.appendChild(rowEl);
   }
@@ -847,15 +1077,15 @@ function verificarConstructor() {
     desbloquearLogro("gran_arquitecto");
     mostrarModalCelebracion(
       "⛏️ ¡CRAFTEO MATEMÁTICO PERFECTO!",
-      `¡Brillante! Lograste exactamente ${bg.rows} filas × ${bg.cols} columnas = ${bg.target} bloques.`
+      `¡Brillante! Lograste exactamente ${bg.rows} filas × ${bg.cols} columnas = ${bg.target} bloques de Minecraft en la mesa.`
     );
     bg.puzzleIndex++;
     setTimeout(cargarMisionConstructor, 1200);
   } else {
     window.sound.playError();
     mostrarModalCelebracion(
-      "🤔 ¡Ajusta tu cuadrícula!",
-      `Actualmente tienes ${bg.rows} × ${bg.cols} = ${bg.rows * bg.cols}. La meta es llegar a ${bg.target}.`
+      "🤔 ¡Ajusta tu cuadrícula de bloques!",
+      `Actualmente tienes ${bg.rows} × ${bg.cols} = ${bg.rows * bg.cols} bloques. La meta de crafteo es exactamente ${bg.target}.`
     );
   }
 }
@@ -887,7 +1117,7 @@ function cargarCasoDetective() {
     btn.innerText = opt;
     btn.addEventListener('click', () => {
       if (opt === caso.respuestaCorrecta) {
-        window.sound.playMarvelShield();
+        window.sound.playCapShieldRing();
         window.sound.playMinecraftXp();
         lanzarSerpentinasYBrillos();
         sumarRecompensa(35, 4);
@@ -910,34 +1140,67 @@ function cargarCasoDetective() {
   });
 }
 
-/* 5. DESAFÍO CONTRA EL RELOJ (SPEED MATH) */
+/* 5. BATALLA CONTRA THANOS & ENDER DRAGON (DUELO ÉPICO FUNCIONAL) */
 function iniciarJuegoReloj() {
   const sg = AppState.speedGame;
   sg.score = 0;
   sg.streak = 0;
   sg.timeLeft = 60;
-  document.getElementById('speedScore').innerText = sg.score;
-  document.getElementById('speedStreak').innerText = 'x1';
-  document.getElementById('speedTimer').innerText = `${sg.timeLeft}s`;
+  sg.vidas = 3;
+  sg.maxVidas = 3;
+  sg.bossHp = 100;
+  sg.bossMaxHp = 100;
+  sg.bossStage = 'thanos';
+
+  const elScore = document.getElementById('speedScore');
+  if (elScore) elScore.innerText = sg.score;
+
+  const elStreak = document.getElementById('speedStreak');
+  if (elStreak) elStreak.innerText = 'x1 🔥';
+
+  const elTimer = document.getElementById('speedTimer');
+  if (elTimer) elTimer.innerText = `${sg.timeLeft}s`;
+
+  const elLives = document.getElementById('speedHeroLives');
+  if (elLives) elLives.innerText = '❤️❤️❤️';
+
+  const elPenalty = document.getElementById('speedPenalty');
+  if (elPenalty) elPenalty.style.display = 'none';
+
+  actualizarHPArenaJefe();
+
+  const bossAvatar = document.getElementById('bossAvatarImg');
+  if (bossAvatar) bossAvatar.src = 'IMAGEN/guantelete.svg';
+
+  const bossIcon = document.getElementById('bossIconEmoji');
+  if (bossIcon) bossIcon.innerText = '🦾';
+
+  const bossTitle = document.getElementById('bossTitle');
+  if (bossTitle) bossTitle.innerText = 'JEFE FASE 1: THANOS (GUANTELETE)';
+
+  const bossQuote = document.getElementById('bossQuoteCloud');
+  if (bossQuote) bossQuote.innerText = '¡Tengo las Gemas del Infinito! ¡Intenta resolver mis cálculos!';
 
   if (sg.timer) clearInterval(sg.timer);
   sg.timer = setInterval(() => {
     sg.timeLeft--;
-    document.getElementById('speedTimer').innerText = `${sg.timeLeft}s`;
+    if (elTimer) elTimer.innerText = `${sg.timeLeft}s`;
+
     if (sg.timeLeft <= 0) {
       clearInterval(sg.timer);
-      window.sound.playMarvelFanfare();
-      lanzarSerpentinasYBrillos();
-      sumarRecompensa(sg.score * 8, Math.floor(sg.score / 3));
-      if (sg.score >= 8) desbloquearLogro("reloj_veloz");
-      mostrarModalCelebracion(
-        "⚡ ¡TIEMPO AGOTADO!",
-        `¡Lograste un puntaje relámpago de ${sg.score} aciertos! Ganaste +${sg.score * 8} XP.`
-      );
+      finalizarBatallaJefe(false, false);
     }
   }, 1000);
 
   siguienteProblemaReloj();
+}
+
+function actualizarHPArenaJefe() {
+  const sg = AppState.speedGame;
+  const hpFill = document.getElementById('bossHpFill');
+  const hpLabel = document.getElementById('bossHpLabel');
+  if (hpFill) hpFill.style.width = `${Math.max(0, sg.bossHp)}%`;
+  if (hpLabel) hpLabel.innerText = `VIDA DEL JEFE: ${Math.max(0, sg.bossHp)} / ${sg.bossMaxHp} HP`;
 }
 
 function siguienteProblemaReloj() {
@@ -959,27 +1222,219 @@ function siguienteProblemaReloj() {
 
   Array.from(opts).sort(() => Math.random() - 0.5).forEach(val => {
     const btn = document.createElement('button');
-    btn.className = 'btn-suspect-number';
-    btn.style.fontSize = '24px';
+    btn.className = 'battle-answer-btn';
     btn.innerText = val;
-    btn.onclick = () => {
-      const sg = AppState.speedGame;
-      if (val === res) {
-        window.sound.playMinecraftXp();
-        sg.score++;
-        sg.streak++;
-        const multiplier = sg.streak >= 5 ? 'x3 🔥' : (sg.streak >= 3 ? 'x2 ⚡' : 'x1');
-        document.getElementById('speedStreak').innerText = multiplier;
-        document.getElementById('speedScore').innerText = sg.score;
-        siguienteProblemaReloj();
-      } else {
-        window.sound.playError();
-        sg.streak = 0;
-        document.getElementById('speedStreak').innerText = 'x1';
-      }
-    };
+    btn.onclick = () => procesarGolpeBatalla(val, res);
     container.appendChild(btn);
   });
+}
+
+function procesarGolpeBatalla(val, res) {
+  const sg = AppState.speedGame;
+
+  if (val === res) {
+    // ACIERTO: Ataque del héroe al jefe
+    sg.score++;
+    sg.streak++;
+    
+    // Daño base 20, con racha aumenta a 25 o 30
+    const damage = sg.streak >= 4 ? 30 : (sg.streak >= 2 ? 25 : 20);
+    sg.bossHp = Math.max(0, sg.bossHp - damage);
+
+    // Actualizar HUD
+    const elScore = document.getElementById('speedScore');
+    if (elScore) elScore.innerText = sg.score;
+
+    const elStreak = document.getElementById('speedStreak');
+    const multiplier = sg.streak >= 5 ? 'x3 🔥🔥🔥' : (sg.streak >= 3 ? 'x2 ⚡⚡' : 'x1 🔥');
+    if (elStreak) elStreak.innerText = multiplier;
+
+    actualizarHPArenaJefe();
+
+    // Efecto visual de golpe y sacudida del jefe
+    animarImpactoJefe(damage);
+
+    // Sonido según racha
+    if (sg.streak >= 3) {
+      window.sound.playThunderClap();
+    } else {
+      window.sound.playSwordHit();
+    }
+    setTimeout(() => window.sound.playMinecraftXp(), 80);
+
+    // Verificar si el jefe fue derrotado
+    if (sg.bossHp <= 0) {
+      if (sg.bossStage === 'thanos') {
+        // Fase 2: Aparece el Ender Dragon!
+        sg.bossStage = 'dragon';
+        sg.bossHp = 100;
+        sg.timeLeft = Math.min(60, sg.timeLeft + 25); // Tiempo bonus
+        const bossAvatar = document.getElementById('bossAvatarImg');
+        if (bossAvatar) bossAvatar.src = 'IMAGEN/espada_diamante.svg';
+        const bossTitle = document.getElementById('bossTitle');
+        if (bossTitle) bossTitle.innerText = '¡FASE 2: ENDER DRAGON DE MINECRAFT! 🐉';
+        const bossIcon = document.getElementById('bossIconEmoji');
+        if (bossIcon) bossIcon.innerText = '🐉';
+        const bossQuote = document.getElementById('bossQuoteCloud');
+        if (bossQuote) bossQuote.innerText = '¡GRROOOAAR! ¡El Ender Dragon desciende del Fin!';
+        window.sound.playCreeperExplode();
+        actualizarHPArenaJefe();
+        setTimeout(siguienteProblemaReloj, 700);
+      } else {
+        // Derrota final de ambos jefes!
+        clearInterval(sg.timer);
+        finalizarBatallaJefe(true);
+      }
+    } else {
+      setTimeout(siguienteProblemaReloj, 400);
+    }
+  } else {
+    // ERROR: Contraataque del jefe, pérdida de vida y penalización de tiempo (-5s)
+    window.sound.playError();
+    sg.streak = 0;
+    sg.vidas = Math.max(0, sg.vidas - 1);
+    sg.timeLeft = Math.max(0, sg.timeLeft - 5);
+
+    const elStreak = document.getElementById('speedStreak');
+    if (elStreak) elStreak.innerText = 'x1';
+
+    const elTimer = document.getElementById('speedTimer');
+    if (elTimer) elTimer.innerText = `${sg.timeLeft}s`;
+
+    const elLives = document.getElementById('speedHeroLives');
+    if (elLives) elLives.innerText = '❤️'.repeat(sg.vidas) + '💔'.repeat(3 - sg.vidas);
+
+    const elPenalty = document.getElementById('speedPenalty');
+    if (elPenalty) {
+      elPenalty.innerText = '-5s! 💥💔';
+      elPenalty.style.display = 'inline';
+      setTimeout(() => { if (elPenalty) elPenalty.style.display = 'none'; }, 900);
+    }
+
+    // Animación de bloqueo / contraataque
+    const bossQuote = document.getElementById('bossQuoteCloud');
+    const frasesFallo = [
+      "¡Thanos contraataca con el Guantelete! ¡Pierdes 1 vida y 5 segundos!",
+      "¡El Ender Dragon lanza fuego de dragón! ¡Pierdes vida y tiempo!",
+      "¡Cálculo incorrecto! ¡El jefe absorbe tu energía!",
+      "¡El jefe esquivó tu ataque y contraatacó con furia!"
+    ];
+    if (bossQuote) bossQuote.innerText = frasesFallo[Math.floor(Math.random() * frasesFallo.length)];
+
+    const bossStageEl = document.getElementById('bossBattleStage');
+    if (bossStageEl) {
+      bossStageEl.style.boxShadow = '0 0 35px rgba(239, 68, 68, 0.9)';
+      setTimeout(() => {
+        bossStageEl.style.boxShadow = '';
+      }, 400);
+    }
+
+    if (sg.vidas <= 0 || sg.timeLeft <= 0) {
+      if (sg.timer) clearInterval(sg.timer);
+      finalizarBatallaJefe(false, true);
+    }
+  }
+}
+
+function animarImpactoJefe(damage) {
+  const wrapper = document.getElementById('bossAvatarWrapper');
+  if (wrapper) {
+    wrapper.classList.remove('boss-hit-active');
+    void wrapper.offsetWidth;
+    wrapper.classList.add('boss-hit-active');
+  }
+
+  const attackFx = document.getElementById('heroAttackFx');
+  if (attackFx) {
+    const fxList = ['⚡', '💥', '⚔️', '✨', '💎'];
+    attackFx.innerText = fxList[Math.floor(Math.random() * fxList.length)];
+    attackFx.classList.remove('hero-attack-active');
+    void attackFx.offsetWidth;
+    attackFx.classList.add('hero-attack-active');
+  }
+
+  const popup = document.getElementById('bossDamagePopup');
+  if (popup) {
+    popup.innerText = `-${damage} HP! 💥`;
+    popup.classList.remove('damage-number-active');
+    void popup.offsetWidth;
+    popup.classList.add('damage-number-active');
+  }
+
+  const bossQuote = document.getElementById('bossQuoteCloud');
+  const frasesDolor = [
+    "¡Aaargh! ¡Ese cálculo me dolió!",
+    "¡Siento el impacto del rayo matemático!",
+    "¡Tu multiplicación fue demasiado certera!"
+  ];
+  if (bossQuote) bossQuote.innerText = frasesDolor[Math.floor(Math.random() * frasesDolor.length)];
+}
+
+function finalizarBatallaJefe(victoria, sinVidas = false) {
+  const sg = AppState.speedGame;
+  if (sg.timer) clearInterval(sg.timer);
+
+  if (victoria) {
+    window.sound.playMarvelFanfare();
+    window.sound.playMinecraftLevelUp();
+    lanzarSerpentinasYBrillos();
+    sumarRecompensa(120, 10);
+    desbloquearLogro("reloj_veloz");
+    mostrarModalCelebracion(
+      "🏆 ¡VICTORIA ÉPICA! ¡THANOS & ENDER DRAGON DERROTADOS!",
+      `<div style="text-align:center;">
+        <div style="font-size:48px; margin-bottom:10px;">👑 ⚡ 🐉 💎</div>
+        <p style="font-size:22px; font-weight:900; color:#059669; margin-bottom:8px;">
+          ¡Has derrotado a ambos jefes legendarios!
+        </p>
+        <p style="font-size:16px; font-weight:700; color:#4B5563; margin-bottom:14px;">
+          Has demostrado la velocidad de un verdadero Vengador y guerrero de Minecraft con ${sg.score} golpes matemáticos certeros.
+        </p>
+        <div style="display:inline-flex; gap:12px; background:#ECFDF5; border:2px solid #6EE7B7; border-radius:999px; padding:8px 20px; font-weight:900; color:#065F46;">
+          <span>+120 XP</span> • <span>+10 💎 Diamantes</span>
+        </div>
+      </div>`,
+      true
+    );
+  } else if (sinVidas) {
+    window.sound.playError();
+    sumarRecompensa(sg.score * 5, Math.floor(sg.score / 4));
+    mostrarModalCelebracion(
+      "💔 ¡TE HAS QUEDADO SIN VIDAS EN LA ARENA!",
+      `<div style="text-align:center;">
+        <div style="font-size:48px; margin-bottom:10px;">💀 💥 💔</div>
+        <p style="font-size:20px; font-weight:900; color:#DC2626; margin-bottom:8px;">
+          ¡El contraataque del jefe agotó tus corazones!
+        </p>
+        <p style="font-size:15px; font-weight:700; color:#4B5563; margin-bottom:14px;">
+          Cada error resta vidas y reduce 5 segundos de tu tiempo. Lograste acertar ${sg.score} golpes antes de caer. ¡Recupera tu energía y vuelve a intentarlo!
+        </p>
+        <div style="display:inline-flex; gap:12px; background:#FEF2F2; border:2px solid #FCA5A5; border-radius:999px; padding:8px 20px; font-weight:900; color:#991B1B;">
+          <span>+${sg.score * 5} XP</span>
+        </div>
+      </div>`,
+      true
+    );
+  } else {
+    window.sound.playMarvelFanfare();
+    sumarRecompensa(sg.score * 5, Math.floor(sg.score / 3));
+    mostrarModalCelebracion(
+      "⏱️ ¡TIEMPO AGOTADO EN LA ARENA!",
+      `<div style="text-align:center;">
+        <div style="font-size:44px; margin-bottom:10px;">⏳ 🦾</div>
+        <p style="font-size:20px; font-weight:800; color:#D97706; margin-bottom:8px;">
+          El jefe logró escapar con ${sg.bossHp} HP restantes.
+        </p>
+        <p style="font-size:15px; font-weight:700; color:#4B5563; margin-bottom:14px;">
+          Lograste acertar ${sg.score} golpes matemáticos. ¡Aumenta tu velocidad de cálculo y desafíalo de nuevo!
+        </p>
+        <div style="display:inline-flex; gap:12px; background:#FFFBEB; border:2px solid #FCD34D; border-radius:999px; padding:8px 20px; font-weight:900; color:#92400E;">
+          <span>+${sg.score * 5} XP</span> • <span>+${Math.floor(sg.score / 3)} ⭐</span>
+        </div>
+      </div>`,
+      true
+    );
+  }
 }
 
 // ============================================================================
@@ -1569,3 +2024,190 @@ function animateParticles() {
     particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
   }
 }
+
+// ============================================================================
+// FONDO INTERACTIVO TEMÁTICO MARVEL & MINECRAFT PARA EL MENÚ Y SISTEMA
+// ============================================================================
+function initMenuInteractiveBackground() {
+  const canvas = document.getElementById('menuInteractiveCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let width = (canvas.width = window.innerWidth);
+  let height = (canvas.height = window.innerHeight);
+
+  window.addEventListener('resize', () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  });
+
+  const mouse = { x: -1000, y: -1000, active: false };
+  window.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    mouse.active = true;
+    if (Math.random() < 0.35) {
+      particles.push(crearParticulaMouse(mouse.x, mouse.y));
+    }
+  });
+
+  window.addEventListener('mouseleave', () => {
+    mouse.active = false;
+  });
+
+  window.addEventListener('click', (e) => {
+    // Al hacer clic en cualquier lugar, generar explosión de orbes y diamantes
+    for (let i = 0; i < 9; i++) {
+      particles.push(crearParticulaClick(e.clientX, e.clientY));
+    }
+  });
+
+  const particleTypes = ['diamond', 'xp_orb', 'star_red', 'star_gold', 'math_op'];
+  const mathSymbols = ['×', '+', '=', '4', '7', '8', '9', '💎', '⭐'];
+
+  function crearParticulaAleatoria() {
+    return {
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.7,
+      vy: -(Math.random() * 0.7 + 0.3),
+      size: Math.random() * 6 + 6,
+      type: particleTypes[Math.floor(Math.random() * particleTypes.length)],
+      symbol: mathSymbols[Math.floor(Math.random() * mathSymbols.length)],
+      alpha: Math.random() * 0.5 + 0.25,
+      pulse: Math.random() * Math.PI * 2,
+      pulseSpeed: Math.random() * 0.04 + 0.02
+    };
+  }
+
+  function crearParticulaMouse(mx, my) {
+    const isDiamond = Math.random() > 0.5;
+    return {
+      x: mx + (Math.random() - 0.5) * 14,
+      y: my + (Math.random() - 0.5) * 14,
+      vx: (Math.random() - 0.5) * 1.6,
+      vy: (Math.random() - 0.5) * 1.6 - 0.6,
+      size: Math.random() * 6 + 4,
+      type: isDiamond ? 'diamond' : 'xp_orb',
+      alpha: 0.85,
+      fade: 0.025,
+      isTransient: true
+    };
+  }
+
+  function crearParticulaClick(cx, cy) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 4.5 + 2;
+    return {
+      x: cx,
+      y: cy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      size: Math.random() * 8 + 5,
+      type: Math.random() > 0.5 ? 'diamond' : 'star_gold',
+      alpha: 1,
+      fade: 0.028,
+      isTransient: true
+    };
+  }
+
+  const particles = [];
+  const TOTAL_BASE = 36;
+  for (let i = 0; i < TOTAL_BASE; i++) {
+    particles.push(crearParticulaAleatoria());
+  }
+
+  function loop() {
+    ctx.clearRect(0, 0, width, height);
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (mouse.active && !p.isTransient) {
+        const dx = p.x - mouse.x;
+        const dy = p.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          const force = (120 - dist) / 120;
+          p.x += (dx / dist) * force * 1.6;
+          p.y += (dy / dist) * force * 1.6;
+
+          // Líneas de conexión luminosa estilo red vibranium / energía estelar
+          ctx.beginPath();
+          ctx.moveTo(mouse.x, mouse.y);
+          ctx.lineTo(p.x, p.y);
+          ctx.strokeStyle = `rgba(34, 211, 238, ${(1 - dist / 120) * 0.3})`;
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        }
+      }
+
+      if (p.isTransient) {
+        p.alpha -= p.fade;
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+      } else {
+        if (p.y < -30) p.y = height + 20;
+        if (p.x < -30) p.x = width + 20;
+        if (p.x > width + 30) p.x = -20;
+        p.pulse += p.pulseSpeed;
+      }
+
+      ctx.save();
+      const currentAlpha = p.isTransient ? p.alpha : (p.alpha + Math.sin(p.pulse) * 0.15);
+      ctx.globalAlpha = Math.max(0, Math.min(1, currentAlpha));
+
+      if (p.type === 'diamond') {
+        // Diamante estilo Minecraft (rombo 4 puntas cyan)
+        ctx.fillStyle = '#22D3EE';
+        ctx.shadowColor = '#06B6D4';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        const s = p.size;
+        ctx.moveTo(p.x, p.y - s);
+        ctx.lineTo(p.x + s * 0.65, p.y);
+        ctx.lineTo(p.x, p.y + s);
+        ctx.lineTo(p.x - s * 0.65, p.y);
+        ctx.closePath();
+        ctx.fill();
+      } else if (p.type === 'xp_orb') {
+        // Orbe de Experiencia Minecraft (verde esmeralda pulsante)
+        ctx.fillStyle = '#4ADE80';
+        ctx.shadowColor = '#10B981';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#FEF08A';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 0.25, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.type === 'star_gold' || p.type === 'star_red') {
+        // Chispa / Estrella Marvel
+        ctx.fillStyle = p.type === 'star_gold' ? '#FACC15' : '#F87171';
+        ctx.shadowColor = p.type === 'star_gold' ? '#EAB308' : '#EF4444';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 0.45, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.type === 'math_op') {
+        // Símbolo matemático
+        ctx.font = `bold ${Math.round(p.size * 1.5)}px 'Fredoka', cursive`;
+        ctx.fillStyle = '#38BDF8';
+        ctx.shadowColor = '#0284C7';
+        ctx.shadowBlur = 6;
+        ctx.fillText(p.symbol, p.x, p.y);
+      }
+
+      ctx.restore();
+    }
+
+    requestAnimationFrame(loop);
+  }
+
+  requestAnimationFrame(loop);
+}
+

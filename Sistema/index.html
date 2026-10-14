@@ -16,6 +16,28 @@
   <!-- Canvas para Confeti de Celebración -->
   <canvas id="confettiCanvas"></canvas>
 
+  <!-- Canvas para Fondo Interactivo Temático Marvel & Minecraft -->
+  <canvas id="menuInteractiveCanvas"></canvas>
+
+  <!-- Fondo Escénico Animado y Desenfoque Temático Marvel & Minecraft -->
+  <div class="app-scenic-ambient-bg">
+    <div class="scenic-mesh-aurora"></div>
+    <!-- Personajes Heroicos y Bloques Flotando con Movimiento en el Fondo -->
+    <div class="scenic-floating-heroes">
+      <img src="IMAGEN/avatar_spiderman.svg" class="scenic-hero hero-1" alt="Spider-Man">
+      <img src="IMAGEN/avatar_gwen.svg" class="scenic-hero hero-2" alt="Ghost-Spider">
+      <img src="IMAGEN/avatar_ironman.svg" class="scenic-hero hero-3" alt="Iron Man">
+      <img src="IMAGEN/avatar_steve.svg" class="scenic-hero hero-4" alt="Steve">
+      <img src="IMAGEN/avatar_alex.svg" class="scenic-hero hero-5" alt="Alex">
+      <img src="IMAGEN/avatar_capitanamarvel.svg" class="scenic-hero hero-6" alt="Capitana Marvel">
+      <img src="IMAGEN/bloque_diamante.svg" class="scenic-hero block-1" alt="Diamante">
+      <img src="IMAGEN/bloque_minecraft.svg" class="scenic-hero block-2" alt="Bloque Minecraft">
+      <img src="IMAGEN/reactor_arc.svg" class="scenic-hero block-3" alt="Reactor">
+      <img src="IMAGEN/espada_diamante.svg" class="scenic-hero block-4" alt="Espada">
+    </div>
+    <div class="scenic-frosted-overlay"></div>
+  </div>
+
   <!-- ========================================================================
        BARRA SUPERIOR (HEADER DEL SISTEMA)
        ======================================================================== -->
@@ -372,13 +394,18 @@
 
         <!-- Subpantalla 2: Gemas del Infinito y Orbes XP -->
         <div class="game-specific-container" id="arenaBurbujas">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; font-weight:800; background:#0F172A; padding:12px 20px; border-radius:16px; border:2px solid #8B5CF6;">
-            <span style="color:#FDE047; font-size:17px;">💎 Gemas Colectadas: <strong id="bubbleScore" style="color:#38BDF8; font-size:24px;">0</strong></span>
-            <span style="color:#EF4444; font-size:20px;">⏱️ Tiempo Restante: <strong id="bubbleTimer">30s</strong></span>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; font-weight:800; background:#0F172A; padding:12px 20px; border-radius:16px; border:2px solid #8B5CF6; flex-wrap:wrap; gap:10px;">
+            <span style="color:#FDE047; font-size:16px;">💎 Gemas: <strong id="bubbleScore" style="color:#38BDF8; font-size:22px;">0</strong></span>
+            <span style="font-size:16px; color:#F43F5E;">❤️ Vidas: <span id="bubbleLives" style="font-size:20px; letter-spacing:3px;">❤️❤️❤️</span></span>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span id="bubblePenalty" style="display:none; color:#EF4444; font-size:15px; font-weight:900;">-4s! 💥</span>
+              <span style="color:#EF4444; font-size:18px;">⏱️ Tiempo: <strong id="bubbleTimer">35s</strong></span>
+            </div>
           </div>
-          <div class="bubble-game-stage" style="background: radial-gradient(circle at 50% 30%, #312E81 0%, #0F172A 85%); border:3px solid #8B5CF6;">
-            <div class="target-multiplication-bubble" id="bubbleTargetText" style="border-color:#F59E0B; color:#78350F; background:#FFFBEB;">6 × 7 = ?</div>
-            <div class="bubbles-container" id="bubblesContainer"></div>
+          <div class="bubble-game-stage" style="background: radial-gradient(circle at 50% 30%, #312E81 0%, #0F172A 85%); border:3px solid #8B5CF6; border-radius:24px; padding:24px;">
+            <div style="text-align:center; color:#A7F3D0; font-weight:800; font-size:15px; margin-bottom:10px;">✨ ¡Toca la Gema del Infinito o Diamante Cósmico con el cálculo correcto! ✨</div>
+            <div class="target-multiplication-bubble" id="bubbleTargetText" style="border-color:#F59E0B; color:#78350F; background:#FFFBEB; font-size:36px; padding:12px 28px;">6 × 7 = ?</div>
+            <div class="gemas-grid-container" id="bubblesContainer"></div>
           </div>
         </div>
 
@@ -418,7 +445,8 @@
             3 × 4 = 12
           </div>
 
-          <div class="builder-grid-display" id="builderGridDisplay"></div>
+          <!-- Mesa de Crafteo con bloques de Minecraft auténticos -->
+          <div class="mc-crafting-table-grid" id="builderGridDisplay"></div>
 
           <button class="btn-launch-quiz" id="btnVerificarConstructor" style="max-width:320px; margin:20px auto 0; background:#16A34A; box-shadow:0 4px 0 #14532D;">
             <span>¡Craftear en la Mesa! ⛏️</span>
@@ -447,27 +475,46 @@
         <div class="game-specific-container" id="arenaReloj">
           <!-- Boss Battle HUD -->
           <div class="boss-hud-bar" style="background:#0F172A; border:3px solid #DC2626; border-radius:20px; padding:16px 22px; margin-bottom:20px; box-shadow:0 8px 24px rgba(220, 38, 38, 0.35);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
               <div style="display:flex; align-items:center; gap:14px;">
-                <span style="font-size:44px; animation:bobCorner 2s infinite alternate;">👾</span>
+                <span style="font-size:44px;" id="bossIconEmoji">🦾</span>
                 <div>
-                  <div style="font-family:'Fredoka', cursive; font-size:22px; font-weight:900; color:#FCA5A5;">JEFE: THANOS & ENDER DRAGON</div>
+                  <div style="font-family:'Fredoka', cursive; font-size:22px; font-weight:900; color:#FCA5A5;" id="bossTitle">JEFE FASE 1: THANOS (GUANTELETE)</div>
                   <div style="font-size:13px; font-weight:800; color:#EF4444;" id="bossHpLabel">VIDA DEL JEFE: 100 / 100 HP</div>
                 </div>
               </div>
               <div style="text-align:right;">
-                <div style="font-family:'Fredoka', cursive; font-size:22px; font-weight:900; color:#FACC15;" id="speedStreak">x1 🔥</div>
-                <div style="font-size:26px; font-weight:900; color:#EF4444;" id="speedTimer">60s</div>
+                <div style="display:flex; align-items:center; gap:12px; justify-content:flex-end;">
+                  <span style="font-size:14px; color:#F43F5E; font-weight:800;">❤️ Vidas: <span id="speedHeroLives" style="font-size:18px; letter-spacing:2px;">❤️❤️❤️</span></span>
+                  <span style="font-size:14px; color:#FDE047; font-weight:800;">⚔️ Aciertos: <strong id="speedScore" style="color:#FFFFFF; font-size:20px;">0</strong></span>
+                  <span style="font-family:'Fredoka', cursive; font-size:22px; font-weight:900; color:#FACC15;" id="speedStreak">x1 🔥</span>
+                </div>
+                <div style="display:flex; align-items:center; justify-content:flex-end; gap:8px;">
+                  <span id="speedPenalty" style="display:none; color:#EF4444; font-size:16px; font-weight:900;">-5s! 💥</span>
+                  <div style="font-size:26px; font-weight:900; color:#EF4444;" id="speedTimer">60s</div>
+                </div>
               </div>
             </div>
             <!-- Barra de Vida del Jefe -->
-            <div style="width:100%; height:16px; background:#450A0A; border-radius:8px; overflow:hidden; border:2px solid #EF4444;">
-              <div id="bossHpFill" style="width:100%; height:100%; background:linear-gradient(90deg, #DC2626, #F87171); transition:width 0.3s ease; box-shadow:0 0 10px #DC2626;"></div>
+            <div style="width:100%; height:18px; background:#450A0A; border-radius:8px; overflow:hidden; border:2px solid #EF4444; position:relative;">
+              <div id="bossHpFill" style="width:100%; height:100%; background:linear-gradient(90deg, #DC2626, #F87171); transition:width 0.35s ease; box-shadow:0 0 10px #DC2626;"></div>
             </div>
           </div>
 
-          <div style="text-align:center; margin:24px 0;">
-            <div style="font-family:'Fredoka'; font-size:52px; font-weight:900; color:#1E1B4B; background:#FEF2F2; border:3px dashed #DC2626; border-radius:22px; padding:16px 32px; display:inline-block; box-shadow:0 6px 18px rgba(220, 38, 38, 0.15);" id="speedOperationText">
+          <!-- Escenario Visual de Batalla con el Jefe -->
+          <div class="boss-battle-stage" id="bossBattleStage">
+            <div class="boss-character-box">
+              <div class="hero-attack-fx" id="heroAttackFx">⚡</div>
+              <div class="damage-number-popup" id="bossDamagePopup">-20 HP 💥</div>
+              <div class="boss-avatar-wrapper" id="bossAvatarWrapper">
+                <img src="IMAGEN/guantelete.svg" alt="Jefe" class="boss-avatar-img" id="bossAvatarImg">
+              </div>
+              <div class="boss-quote-cloud" id="bossQuoteCloud">¡El poder del Guantelete y el Vacío del Dragón son invencibles!</div>
+            </div>
+          </div>
+
+          <div style="text-align:center; margin:16px 0 24px;">
+            <div style="font-family:'Fredoka'; font-size:48px; font-weight:900; color:#FFFFFF; background:#0F172A; border:3px dashed #DC2626; border-radius:22px; padding:14px 32px; display:inline-block; box-shadow:0 6px 20px rgba(220, 38, 38, 0.4);" id="speedOperationText">
               7 × 8 = ?
             </div>
           </div>
