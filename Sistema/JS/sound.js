@@ -58,6 +58,16 @@ class SoundSystem {
     this.playTone(620, 'triangle', 0.08, 0.08);
   }
 
+  // Nota musical melódica en escala pentatónica para contar objetos y ritmo animado
+  playChimeNote(step = 1) {
+    if (this.muted) return;
+    this.init();
+    const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1174.66];
+    const freq = scale[(step - 1) % scale.length];
+    this.playTone(freq, 'sine', 0.22, 0.15, 0.0);
+    this.playTone(freq * 2, 'triangle', 0.18, 0.06, 0.02);
+  }
+
   // =========================================================================
   // EFECTOS CINEMÁTICOS DE SUPERHÉROES MARVEL
   // =========================================================================

@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderizarProgresoYLogros();
   inicializarEfectosParticulas();
   initMenuInteractiveBackground();
+  initMouseBackgroundParallax();
 });
 
 // Carga o verificación del estudiante
@@ -275,7 +276,121 @@ function inicializarEventosNavegacion() {
   }
 }
 
+function verificarDesbloqueoSimce() {
+  const p = AppState.perfil;
+  if (!p) return { completado: true, entrenadas: 9, total: 9, pendientes: [] };
+  p.tablasEntrenadas = p.tablasEntrenadas || {};
+  let count = 0;
+  const pendientes = [];
+  for (let t = 2; t <= 10; t++) {
+    if (p.tablasEntrenadas[t]) {
+      count++;
+    } else {
+      pendientes.push(t);
+    }
+  }
+  return { completado: count >= 9, entrenadas: count, total: 9, pendientes };
+}
+
+function actualizarBarraDesbloqueoSimce() {
+  const estado = verificarDesbloqueoSimce();
+  const counterEl = document.getElementById('simceUnlockCounter');
+  const fillEl = document.getElementById('simceUnlockBarFill');
+  const textEl = document.getElementById('simceUnlockStatusText');
+
+  if (counterEl) {
+    counterEl.innerText = `${estado.entrenadas} / 9 Tablas Dominadas`;
+  }
+  if (fillEl) {
+    const pct = Math.round((estado.entrenadas / 9) * 100);
+    fillEl.style.width = `${pct}%`;
+  }
+  if (textEl) {
+    if (estado.completado) {
+      textEl.innerHTML = `<strong style="color:#10B981;">🎉 ¡ENTRENAMIENTO COMPLETO!</strong> El Ensayo Oficial SIMCE está 100% desbloqueado.`;
+    } else {
+      textEl.innerText = `Completa el entrenamiento en las 9 tablas (del 2 al 10) para desbloquear el examen oficial. Te faltan ${estado.pendientes.length} tablas.`;
+    }
+  }
+}
+
 function cambiarVista(viewName) {
+  // Requisito: Debe terminar todo su entrenamiento previo para ingresar al SIMCE
+  if (viewName === 'simce') {
+    const estadoDesbloqueo = verificarDesbloqueoSimce();
+    if (!estadoDesbloqueo.completado) {
+      window.sound.playError();
+      const nombresPendientes = estadoDesbloqueo.pendientes.map(t => `Tabla del ${t}`).join(', ');
+      mostrarModalCelebracion(
+        "🔒 ¡ENTRENAMIENTO INCOMPLETO PARA EL SIMCE!",
+        `<div style="text-align:center;">
+          <div style="font-size:46px; margin-bottom:10px;">🛡️ ⛏️ 🔒</div>
+          <p style="font-size:18px; font-weight:800; color:#1E1B4B; margin-bottom:10px;">
+            Para ingresar al <strong>Ensayo Oficial SIMCE</strong> debes completar todo tu entrenamiento previo en las 9 tablas de multiplicar (Tablas del 2 al 10).
+          </p>
+          <div style="background:#FEF3C7; border:2px solid #F59E0B; border-radius:12px; padding:12px 18px; margin-bottom:12px; font-weight:800; color:#92400E;">
+            📊 Progreso Actual: Llevas <strong>${estadoDesbloqueo.entrenadas} de 9</strong> tablas completadas.
+          </div>
+          <div style="background:#EFF6FF; border:1px solid #BFDBFE; border-radius:10px; padding:8px 14px; margin-bottom:14px; font-size:13px; color:#1E40AF; font-weight:700;">
+            ⏳ Tablas pendientes por entrenar: <strong>${nombresPendientes}</strong>
+          </div>
+          <p style="font-size:14px; color:#4B5563; margin-bottom:16px;">
+            ¡Entrena cada tabla con los superhéroes y Minecraft en la Academia para dominar sus poderes y desbloquear el examen!
+          </p>
+          <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <button type="button" class="btn-stepper" id="btnIrAprenderTablas" style="width:auto; padding:8px 18px; border-radius:999px; background:#2563EB; color:#FFF; font-size:14px;">
+              📘 Ir a Entrenar Tablas
+            </button>
+            <button type="button" class="btn-stepper" id="btnDesbloquearSimceDirecto" style="width:auto; padding:8px 18px; border-radius:999px; background:#10B981; color:#FFF; font-size:14px;" title="Completar entrenamiento y desbloquear">
+              ⚡ Completar Entrenamiento y Entrar
+            </button>
+          </div>
+        </div>`,
+        true
+      );
+
+      setTimeout(() => {
+        const btnGo = document.getElementById('btnIrAprenderTablas');
+        const btnUnlock = document.getElementById('btnDesbloquearSimceDirecto');
+        if (btnGo) {
+          btnGo.onclick = () => {
+            cerrarModalCelebracion();
+            cambiarVista('aprender');
+          };
+        }
+        if (btnUnlock) {
+          btnUnlock.onclick = () => {
+            for (let i = 2; i <= 10; i++) {
+              AppState.perfil.tablasEntrenadas[i] = true;
+              AppState.perfil.tablasProgreso[i] = 100;
+            }
+            guardarPerfil();
+            cerrarModalCelebracion();
+            cambiarVista('simce');
+          };
+        }
+      }, 100);
+      return;
+    }
+
+    // Al ingresar al SIMCE, si es un nuevo intento, asegurar preguntas variadas y no repetidas
+    if (AppState.simce.entregado || Object.keys(AppState.simce.respuestas).length === 0) {
+      if (typeof obtenerDiezPreguntasSimceAleatorias === 'function') {
+        SIMCE_PREGUNTAS = obtenerDiezPreguntasSimceAleatorias(AppState.simce.ultimasPreguntasIds || []);
+        AppState.simce.ultimasPreguntasIds = SIMCE_PREGUNTAS.map(q => q.id);
+      }
+      AppState.simce.respuestas = {};
+      AppState.simce.entregado = false;
+      AppState.simce.currentQuestionIndex = 0;
+      const resCard = document.getElementById('simceResultsCard');
+      const testCont = document.getElementById('simceTestContainer');
+      if (resCard) resCard.style.display = 'none';
+      if (testCont) testCont.style.display = 'grid';
+      renderizarSidebarSimce();
+      mostrarPreguntaSimce(0);
+    }
+  }
+
   AppState.activeView = viewName;
 
   document.querySelectorAll('.nav-tab-btn').forEach(btn => {
@@ -301,27 +416,165 @@ function cambiarVista(viewName) {
 }
 
 // ============================================================================
-// MÓDULO 1: APRENDER TABLAS (CONCRETO-PICTÓRICO-SIMBÓLICO)
+// MÓDULO 1: APRENDER TABLAS (CONCRETO-PICTÓRICO-SIMBÓLICO CON HÉROES & 3D VOXEL)
 // ============================================================================
-function inicializarAprenderTablas() {
+let rhythmInterval = null;
+
+// Estado para la manipulación e interactividad 3D de los cubos de multiplicación
+const Voxel3DState = {
+  rotX: -22,
+  rotY: 35,
+  isDragging: false,
+  startX: 0,
+  startY: 0,
+  autoSpin: true,
+  exploded: false,
+  mode: '3d'
+};
+
+function aplicarRotacionVoxel3D() {
+  const scene = document.getElementById('voxel3DScene');
+  if (scene) {
+    scene.style.transform = `rotateX(${Voxel3DState.rotX}deg) rotateY(${Voxel3DState.rotY}deg)`;
+  }
+}
+
+let voxelSpinLoopStarted = false;
+function iniciarLoopAnimacionVoxel3D() {
+  if (voxelSpinLoopStarted) return;
+  voxelSpinLoopStarted = true;
+
+  function spinLoop() {
+    if (Voxel3DState.autoSpin && !Voxel3DState.isDragging && AppState.activeView === 'aprender') {
+      Voxel3DState.rotY = (Voxel3DState.rotY + 0.35) % 360;
+      aplicarRotacionVoxel3D();
+    }
+    requestAnimationFrame(spinLoop);
+  }
+  requestAnimationFrame(spinLoop);
+}
+
+function renderizarSelectorTablas() {
   const strip = document.getElementById('tableSelectorStrip');
   if (!strip) return;
 
   strip.innerHTML = '';
+  const p = AppState.perfil || {};
+  const entrenadas = p.tablasEntrenadas || {};
+
   for (let num = 2; num <= 10; num++) {
     const btn = document.createElement('button');
-    btn.className = `btn-select-table ${num === AppState.activeTable ? 'active' : ''}`;
-    btn.innerText = `Tabla del ${num}`;
+    const isMastered = !!entrenadas[num];
+    const isActive = num === AppState.activeTable;
+    btn.className = `btn-select-table ${isActive ? 'active' : ''} ${isMastered ? 'mastered' : ''}`;
+    const tData = TABLAS_INFO[num];
+    const icon = tData ? tData.icono : '📘';
+    const checkmark = isMastered ? ' <span style="color:#10B981; font-size:14px; margin-left:4px;" title="Tabla Dominada">✅</span>' : '';
+    btn.innerHTML = `<span>${icon}</span> <span>Tabla del ${num}</span>${checkmark}`;
     btn.addEventListener('click', () => {
       window.sound.playMinecraftPop();
+      if (rhythmInterval) {
+        clearInterval(rhythmInterval);
+        rhythmInterval = null;
+        const btnR = document.getElementById('btnRhythmWalkthrough');
+        if (btnR) btnR.innerHTML = `<span class="rhythm-icon">⚡</span><span>▶️ Racha Rítmica Animada</span>`;
+      }
       AppState.activeTable = num;
       AppState.activeMultiplier = 3;
       AppState.isCommutativeInverted = false;
-      document.querySelectorAll('.btn-select-table').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      renderizarSelectorTablas();
+
+      const mentorInfo = TABLAS_INFO[num];
+      if (mentorInfo && mentorInfo.sonido && typeof window.sound[mentorInfo.sonido] === 'function') {
+        window.sound[mentorInfo.sonido]();
+      }
+
       actualizarVistaTabla();
+      actualizarBarraDesbloqueoSimce();
     });
     strip.appendChild(btn);
+  }
+}
+
+function inicializarAprenderTablas() {
+  renderizarSelectorTablas();
+  actualizarBarraDesbloqueoSimce();
+
+  // Botón para Marcar la Tabla como Dominada y avanzar hacia el SIMCE
+  const btnMaster = document.getElementById('btnMasterCurrentTable');
+  if (btnMaster) {
+    btnMaster.addEventListener('click', () => {
+      const t = AppState.activeTable;
+      AppState.perfil.tablasEntrenadas = AppState.perfil.tablasEntrenadas || {};
+      AppState.perfil.tablasProgreso = AppState.perfil.tablasProgreso || {};
+      AppState.perfil.tablasEntrenadas[t] = true;
+      AppState.perfil.tablasProgreso[t] = 100;
+      guardarPerfil();
+
+      window.sound.playMarvelFanfare();
+      window.sound.playMinecraftLevelUp();
+      lanzarSerpentinasYBrillos();
+      sumarRecompensa(35, 3);
+
+      const tInfo = TABLAS_INFO[t];
+      const estado = verificarDesbloqueoSimce();
+
+      renderizarSelectorTablas();
+      actualizarBarraDesbloqueoSimce();
+      actualizarVistaTabla();
+
+      if (estado.completado) {
+        mostrarModalCelebracion(
+          "🎉 ¡MISIÓN CUMPLIDA: ENSAYO SIMCE DESBLOQUEADO!",
+          `<div style="text-align:center;">
+            <div style="font-size:52px; margin-bottom:12px;">🏆 🛡️ 💎 📝</div>
+            <h3 style="font-size:22px; font-weight:900; color:#059669; margin-bottom:10px;">
+              ¡Felicidades, Súper Héroe Matemático!
+            </h3>
+            <p style="font-size:16px; font-weight:700; color:#1E293B; line-height:1.5; margin-bottom:14px;">
+              Has completado el entrenamiento de las <strong>9 tablas de multiplicar (2 al 10)</strong>. 
+              ¡Tus poderes están en su máximo nivel y el <strong>Ensayo Oficial SIMCE</strong> ya está 100% desbloqueado para ti!
+            </p>
+            <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:14px;">
+              <button type="button" class="btn-stepper" id="btnCelebrarIrSimce" style="width:auto; padding:10px 24px; border-radius:999px; background:#DC2626; color:#FFF; font-size:15px; font-weight:900; border:2px solid #FDE047;">
+                📝 ¡Rendir Ensayo SIMCE Ahora!
+              </button>
+              <button type="button" class="btn-stepper" onclick="cerrarModalCelebracion()" style="width:auto; padding:10px 20px; border-radius:999px; background:#3B82F6; color:#FFF; font-size:15px; font-weight:900;">
+                👍 Seguir Practicando
+              </button>
+            </div>
+          </div>`,
+          true
+        );
+
+        setTimeout(() => {
+          const btnSimce = document.getElementById('btnCelebrarIrSimce');
+          if (btnSimce) {
+            btnSimce.onclick = () => {
+              cerrarModalCelebracion();
+              cambiarVista('simce');
+            };
+          }
+        }, 100);
+      } else {
+        mostrarModalCelebracion(
+          `⭐ ¡${tInfo.nombre} DOMINADA!`,
+          `<div style="text-align:center;">
+            <div style="font-size:42px; margin-bottom:10px;">${tInfo.icono} ⚡ 💎</div>
+            <p style="font-size:18px; font-weight:900; color:#059669; margin-bottom:8px;">
+              ¡Genial! Has dominado la ${tInfo.nombre} con ${tInfo.mentor}.
+            </p>
+            <div style="background:#FEF3C7; border:2px solid #F59E0B; border-radius:12px; padding:10px; margin-bottom:12px; font-weight:800; color:#92400E;">
+              Llevas ${estado.entrenadas} de 9 tablas completadas. ¡Faltan solo ${estado.pendientes.length} para el SIMCE!
+            </div>
+            <p style="font-size:14px; color:#4B5563;">
+              Ganaste +35 XP y +3 Diamantes.
+            </p>
+          </div>`,
+          false
+        );
+      }
+    });
   }
 
   // Steppers para aumentar o disminuir el multiplicador
@@ -345,13 +598,133 @@ function inicializarAprenderTablas() {
     });
   }
 
-  // Botón conmutativo
+  // Modos de Aprendizaje: Cubos 3D vs Grupos
+  const btnM3D = document.getElementById('btnMode3D');
+  const btnMGrupos = document.getElementById('btnModeGrupos');
+  const vViewport = document.getElementById('voxel3DViewport');
+  const vToolbar = document.getElementById('voxel3DToolbar');
+  const stageBox = document.getElementById('groupsStageBox');
+
+  if (btnM3D && btnMGrupos) {
+    btnM3D.addEventListener('click', () => {
+      window.sound.playClick();
+      btnM3D.classList.add('active');
+      btnMGrupos.classList.remove('active');
+      Voxel3DState.mode = '3d';
+      if (vViewport) vViewport.style.display = 'flex';
+      if (vToolbar) vToolbar.style.display = 'flex';
+      if (stageBox) stageBox.style.display = 'none';
+      actualizarVistaTabla();
+    });
+
+    btnMGrupos.addEventListener('click', () => {
+      window.sound.playClick();
+      btnMGrupos.classList.add('active');
+      btnM3D.classList.remove('active');
+      Voxel3DState.mode = 'grupos';
+      if (vViewport) vViewport.style.display = 'none';
+      if (vToolbar) vToolbar.style.display = 'none';
+      if (stageBox) stageBox.style.display = 'flex';
+      actualizarVistaTabla();
+    });
+  }
+
+  // Herramientas 3D
+  const btnSpin = document.getElementById('btnToggleAutoSpin');
+  if (btnSpin) {
+    btnSpin.addEventListener('click', () => {
+      window.sound.playClick();
+      Voxel3DState.autoSpin = !Voxel3DState.autoSpin;
+      btnSpin.classList.toggle('active', Voxel3DState.autoSpin);
+    });
+  }
+
+  const btnExplode = document.getElementById('btnExplode3DCubes');
+  if (btnExplode) {
+    btnExplode.addEventListener('click', () => {
+      window.sound.playCapShieldRing();
+      Voxel3DState.exploded = !Voxel3DState.exploded;
+      btnExplode.classList.toggle('active', Voxel3DState.exploded);
+      actualizarVistaTabla();
+    });
+  }
+
+  const btnReset = document.getElementById('btnReset3DView');
+  if (btnReset) {
+    btnReset.addEventListener('click', () => {
+      window.sound.playClick();
+      Voxel3DState.rotX = -22;
+      Voxel3DState.rotY = 35;
+      aplicarRotacionVoxel3D();
+    });
+  }
+
+  // Interacción de Arrastre 3D con Mouse y Touch en el Viewport
+  if (vViewport) {
+    const onStart = (clientX, clientY) => {
+      Voxel3DState.isDragging = true;
+      Voxel3DState.startX = clientX;
+      Voxel3DState.startY = clientY;
+    };
+
+    const onMove = (clientX, clientY) => {
+      if (!Voxel3DState.isDragging) return;
+      const dx = clientX - Voxel3DState.startX;
+      const dy = clientY - Voxel3DState.startY;
+      Voxel3DState.rotY += dx * 0.55;
+      Voxel3DState.rotX -= dy * 0.55;
+      Voxel3DState.rotX = Math.max(-80, Math.min(80, Voxel3DState.rotX));
+      Voxel3DState.startX = clientX;
+      Voxel3DState.startY = clientY;
+      aplicarRotacionVoxel3D();
+    };
+
+    const onEnd = () => {
+      Voxel3DState.isDragging = false;
+    };
+
+    vViewport.addEventListener('mousedown', (e) => onStart(e.clientX, e.clientY));
+    window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+    window.addEventListener('mouseup', onEnd);
+
+    vViewport.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 0) onStart(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0) onMove(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+
+    window.addEventListener('touchend', onEnd);
+  }
+
+  iniciarLoopAnimacionVoxel3D();
+
+  // Botón conmutativo con rotación 3D
   const btnConmutativa = document.getElementById('btnToggleCommutative');
   if (btnConmutativa) {
     btnConmutativa.addEventListener('click', () => {
       window.sound.playMarvelShield();
       AppState.isCommutativeInverted = !AppState.isCommutativeInverted;
-      actualizarVistaTabla();
+      const stage = document.getElementById('groupsStageBox');
+      if (stage) {
+        stage.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        stage.style.transform = 'scale(0.92) rotateY(180deg)';
+        setTimeout(() => {
+          actualizarVistaTabla();
+          stage.style.transform = 'scale(1) rotateY(0deg)';
+        }, 180);
+      } else {
+        actualizarVistaTabla();
+      }
+    });
+  }
+
+  // Botón modo racha rítmica
+  const btnRhythm = document.getElementById('btnRhythmWalkthrough');
+  if (btnRhythm) {
+    btnRhythm.addEventListener('click', () => {
+      iniciarRachaRitmica();
     });
   }
 
@@ -363,10 +736,17 @@ function inicializarAprenderTablas() {
       const tInfo = TABLAS_INFO[AppState.activeTable];
       const pistaAzar = tInfo.pistas[Math.floor(Math.random() * tInfo.pistas.length)];
       mostrarModalCelebracion(
-        `🛡️ Pista Heroica (Tabla del ${AppState.activeTable})`,
+        `🛡️ Consejo de ${tInfo.mentor} (Tabla del ${AppState.activeTable})`,
         `<div style="font-size:16px; line-height:1.6; color:#1E3A8A; font-weight:700;">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px; background:#EFF6FF; padding:10px 16px; border-radius:12px; border:2px solid #60A5FA;">
+            <img src="${tInfo.avatarImg}" style="width:48px; height:48px;" alt="${tInfo.mentor}">
+            <div>
+              <div style="font-size:12px; color:#DC2626; font-weight:900;">${tInfo.universo}</div>
+              <div style="font-size:17px; font-weight:900; color:#1E3A8A;">${tInfo.mentor}</div>
+            </div>
+          </div>
           <p style="margin-bottom:12px;">⚡ <strong>${pistaAzar}</strong></p>
-          <div style="background:#EFF6FF; border-left:4px solid #3B82F6; padding:12px; border-radius:8px;">
+          <div style="background:#FFFBEB; border-left:4px solid #F59E0B; padding:12px; border-radius:8px; color:#78350F;">
             ${tInfo.truco}
           </div>
         </div>`,
@@ -375,7 +755,7 @@ function inicializarAprenderTablas() {
     });
   }
 
-  // Botón Desafío Rápido corregido y mejorado
+  // Botón Desafío Rápido
   const btnQuizTabla = document.getElementById('btnLaunchTableQuiz');
   if (btnQuizTabla) {
     btnQuizTabla.addEventListener('click', () => {
@@ -387,61 +767,189 @@ function inicializarAprenderTablas() {
   actualizarVistaTabla();
 }
 
+// Renderizado de Cubos Voxel 3D en Perspectiva Real (Rotación 360°, Notas Musicales y Desarme de Grupos)
+function renderVoxel3DCubes(factorA, factorB, resultado, tInfo) {
+  const scene = document.getElementById('voxel3DScene');
+  if (!scene) return;
+  scene.innerHTML = '';
+
+  const chip = document.getElementById('interactiveCountChip');
+  if (chip) chip.style.display = 'none';
+
+  let themeClass = 'cube-theme-diamond';
+  const mentor = tInfo.mentor || '';
+  if (mentor.includes('Iron Man')) themeClass = 'cube-theme-ironman';
+  else if (mentor.includes('Hulk')) themeClass = 'cube-theme-hulk';
+  else if (mentor.includes('Thor')) themeClass = 'cube-theme-thor';
+  else if (mentor.includes('Capitán')) themeClass = 'cube-theme-cap';
+
+  const numGrupos = factorA;
+  const itemsPorGrupo = factorB;
+  const cubeSize = 44;
+  const gapCubes = 12;
+  const groupSpacing = Voxel3DState.exploded ? 95 : 62;
+
+  const totalHeight = (numGrupos - 1) * groupSpacing;
+  const startY = -totalHeight / 2;
+
+  let globalIndex = 0;
+
+  for (let g = 0; g < numGrupos; g++) {
+    const groupEl = document.createElement('div');
+    groupEl.className = 'cube-3d-group';
+    const currentY = startY + (g * groupSpacing);
+    const zOffset = (g - (numGrupos - 1) / 2) * (Voxel3DState.exploded ? 45 : 12);
+    groupEl.style.transform = `translate3d(0, ${currentY}px, ${zOffset}px)`;
+
+    const groupWidth = (itemsPorGrupo - 1) * (cubeSize + gapCubes);
+    const startX = -groupWidth / 2;
+
+    for (let i = 0; i < itemsPorGrupo; i++) {
+      globalIndex++;
+      const currentGlobalIndex = globalIndex;
+      const currentX = startX + (i * (cubeSize + gapCubes));
+
+      const cube = document.createElement('div');
+      cube.className = `cube-3d ${themeClass}`;
+      cube.style.transform = `translate3d(${currentX}px, 0, 0)`;
+      cube.title = `Cubo #${currentGlobalIndex} de ${resultado} • Grupo ${g + 1} (${itemsPorGrupo} cubos)`;
+
+      const faces = ['front', 'back', 'top', 'bottom', 'left', 'right'];
+      faces.forEach(f => {
+        const faceEl = document.createElement('div');
+        faceEl.className = `cube-face face-${f}`;
+        if (f === 'front') {
+          faceEl.innerText = `${currentGlobalIndex}`;
+        } else if (f === 'top') {
+          faceEl.innerHTML = tInfo.emojiObjeto || '💎';
+        }
+        cube.appendChild(faceEl);
+      });
+
+      cube.addEventListener('click', (e) => {
+        e.stopPropagation();
+        cube.classList.remove('active-tap');
+        void cube.offsetWidth;
+        cube.classList.add('active-tap');
+
+        if (window.sound && typeof window.sound.playChimeNote === 'function') {
+          window.sound.playChimeNote(currentGlobalIndex);
+        }
+
+        if (chip) {
+          chip.style.display = 'block';
+          chip.innerHTML = `🧊 ¡Cubo #${currentGlobalIndex} de ${resultado}! (${factorA} grupos de ${factorB} = <strong style="color:#10B981;">${resultado}</strong>)`;
+        }
+      });
+
+      groupEl.appendChild(cube);
+    }
+
+    scene.appendChild(groupEl);
+  }
+
+  aplicarRotacionVoxel3D();
+}
+
 function actualizarVistaTabla() {
   const t = AppState.activeTable;
   const k = AppState.activeMultiplier;
   const tInfo = TABLAS_INFO[t];
   if (!tInfo) return;
 
+  // Registrar la tabla como entrenada para desbloquear el SIMCE
+  if (AppState.perfil) {
+    AppState.perfil.tablasEntrenadas = AppState.perfil.tablasEntrenadas || {};
+    AppState.perfil.tablasEntrenadas[t] = true;
+    guardarPerfil();
+  }
+
   const factorA = AppState.isCommutativeInverted ? k : t;
   const factorB = AppState.isCommutativeInverted ? t : k;
   const resultado = factorA * factorB;
 
+  // Actualizar Banner del Mentor
+  const avatarEl = document.getElementById('mentorAvatarImg');
+  const universeTagEl = document.getElementById('mentorUniverseTag');
+  const nameTitleEl = document.getElementById('mentorNameTitle');
+  const mottoEl = document.getElementById('mentorMottoText');
+  const mentorBanner = document.getElementById('tableMentorBanner');
+
+  if (avatarEl) avatarEl.src = tInfo.avatarImg;
+  if (universeTagEl) universeTagEl.innerText = tInfo.universo.toUpperCase();
+  if (nameTitleEl) nameTitleEl.innerText = `${tInfo.mentor} • ${tInfo.nombre}`;
+  if (mottoEl) mottoEl.innerText = `"${tInfo.subtitulo}. ¡Poder de Combate: ${tInfo.poder}!"`;
+  if (mentorBanner) {
+    mentorBanner.style.borderColor = tInfo.color;
+    mentorBanner.style.boxShadow = `0 12px 30px rgba(0, 0, 0, 0.4), 0 0 24px ${tInfo.color}45`;
+  }
+
+  // Expresión grande animada
   const expEl = document.getElementById('mathExpressionDisplay');
   if (expEl) {
-    expEl.innerHTML = `${factorA} × ${factorB} = <span style="color:#059669">${resultado}</span>`;
+    expEl.innerHTML = `${factorA} × ${factorB} = <span style="color:#10B981; text-shadow:0 0 12px rgba(16,185,129,0.6);">${resultado}</span>`;
   }
 
   const nombreTablaEl = document.getElementById('tablaTituloActivo');
   const patronTablaEl = document.getElementById('tablaPatronActivo');
   const trucoTablaEl = document.getElementById('tablaTrucoActivo');
+  const tipIconEl = document.getElementById('tipBannerIcon');
 
   if (nombreTablaEl) nombreTablaEl.innerText = `${tInfo.nombre} • ${tInfo.subtitulo}`;
   if (patronTablaEl) patronTablaEl.innerText = tInfo.patron;
   if (trucoTablaEl) trucoTablaEl.innerText = tInfo.truco;
+  if (tipIconEl) tipIconEl.innerText = tInfo.icono || '✨';
 
-  // Render pictórico de canastas
+  // Renderizar Cubos 3D Voxel Interactivos
+  renderVoxel3DCubes(factorA, factorB, resultado, tInfo);
+
+  // Render pictórico de pods animados
   const stage = document.getElementById('groupsStageBox');
   if (stage) {
     stage.innerHTML = '';
     const numGrupos = factorA;
     const itemsPorGrupo = factorB;
+    let globalItemCount = 0;
 
     for (let g = 1; g <= numGrupos; g++) {
-      const basket = document.createElement('div');
-      basket.className = 'visual-group-basket';
+      const pod = document.createElement('div');
+      pod.className = 'visual-group-pod';
+      pod.style.animationDelay = `${(g - 1) * 0.05}s`;
+      pod.style.borderColor = tInfo.color;
 
-      const tag = document.createElement('span');
-      tag.className = 'basket-tag';
-      tag.innerText = `Bloque ${g}`;
-      basket.appendChild(tag);
+      const header = document.createElement('div');
+      header.className = 'pod-header-label';
+      header.innerText = `Pod ${g} • ${itemsPorGrupo} ${tInfo.unidad}`;
+      pod.appendChild(header);
+
+      const itemsGrid = document.createElement('div');
+      itemsGrid.className = 'pod-items-grid';
 
       for (let i = 1; i <= itemsPorGrupo; i++) {
-        const item = document.createElement('span');
-        item.className = 'basket-item-emoji';
-        item.innerText = tInfo.emojiObjeto || '⭐';
-        basket.appendChild(item);
+        globalItemCount++;
+        const currentNum = globalItemCount;
+        const itemBtn = document.createElement('span');
+        itemBtn.className = 'interactive-item-unit';
+        itemBtn.innerText = tInfo.emojiObjeto || '⭐';
+        itemBtn.title = `Toca para contar: #${currentNum} (Total: ${resultado})`;
+
+        itemBtn.addEventListener('click', (e) => {
+          handleTapItem(e, currentNum, resultado, tInfo);
+        });
+
+        itemsGrid.appendChild(itemBtn);
       }
 
-      stage.appendChild(basket);
+      pod.appendChild(itemsGrid);
+      stage.appendChild(pod);
     }
   }
 
-  // Suma iterada
+  // Suma iterada con formato claro
   const sumEl = document.getElementById('iteratedSumDisplay');
   if (sumEl) {
     const sumandos = Array(factorA).fill(factorB).join(' + ');
-    sumEl.innerHTML = `<strong>Suma iterada:</strong> ${sumandos} = <strong>${resultado}</strong> ${tInfo.unidad}`;
+    sumEl.innerHTML = `<strong>Suma iterada:</strong> ${sumandos} = <strong style="color:#059669">${resultado}</strong> ${tInfo.unidad}`;
   }
 
   // Lista rápida 1..10
@@ -451,6 +959,7 @@ function actualizarVistaTabla() {
     for (let i = 1; i <= 10; i++) {
       const row = document.createElement('div');
       row.className = `table-row-item ${i === k ? 'highlighted' : ''}`;
+      row.id = `tableRowItem_${i}`;
       row.innerHTML = `
         <span>${t} × ${i}</span>
         <span class="res">${t * i}</span>
@@ -463,6 +972,91 @@ function actualizarVistaTabla() {
       gridEl.appendChild(row);
     }
   }
+}
+
+// Interacción de toque en cada objeto dentro de los pods
+function handleTapItem(event, itemNum, totalResult, tInfo) {
+  event.stopPropagation();
+  const el = event.currentTarget;
+  el.classList.remove('tapped');
+  void el.offsetWidth;
+  el.classList.add('tapped');
+
+  window.sound.playChimeNote(itemNum);
+
+  // Mostrar chip con el conteo
+  const chip = document.getElementById('interactiveCountChip');
+  if (chip) {
+    chip.style.display = 'block';
+    chip.innerHTML = `✨ Objeto #${itemNum} contado • ${totalResult - itemNum === 0 ? '🎉 ¡Cálculo Completo: ' + totalResult + '!' : 'Faltan ' + (totalResult - itemNum) + ' para ' + totalResult}`;
+    clearTimeout(chip._timer);
+    chip._timer = setTimeout(() => {
+      chip.style.display = 'none';
+    }, 2800);
+  }
+
+  if (itemNum === totalResult) {
+    window.sound.playSparkle();
+  }
+}
+
+// Racha Rítmica Animada (Autoplay de la tabla)
+function iniciarRachaRitmica() {
+  if (rhythmInterval) {
+    clearInterval(rhythmInterval);
+    rhythmInterval = null;
+  }
+
+  const btn = document.getElementById('btnRhythmWalkthrough');
+  if (btn) btn.innerHTML = `<span>⏳ Entrenando Racha...</span>`;
+
+  const tInfo = TABLAS_INFO[AppState.activeTable];
+  if (tInfo && tInfo.sonido && typeof window.sound[tInfo.sonido] === 'function') {
+    window.sound[tInfo.sonido]();
+  }
+
+  let step = 1;
+  AppState.activeMultiplier = 1;
+  actualizarVistaTabla();
+  window.sound.playChimeNote(1);
+
+  rhythmInterval = setInterval(() => {
+    step++;
+    if (step <= 10) {
+      AppState.activeMultiplier = step;
+      actualizarVistaTabla();
+      window.sound.playChimeNote(step);
+
+      // Resaltar fila rápida
+      const rowEl = document.getElementById(`tableRowItem_${step}`);
+      if (rowEl) {
+        rowEl.classList.add('rhythm-highlight-step');
+        setTimeout(() => rowEl.classList.remove('rhythm-highlight-step'), 400);
+      }
+    } else {
+      clearInterval(rhythmInterval);
+      rhythmInterval = null;
+      window.sound.playMarvelFanfare();
+      window.sound.playMinecraftLevelUp();
+      lanzarSerpentinasYBrillos();
+      if (btn) btn.innerHTML = `<span class="rhythm-icon">⚡</span><span>▶️ Racha Rítmica Animada</span>`;
+
+      mostrarModalCelebracion(
+        `🏆 ¡RACHA HEROICA COMPLETADA!`,
+        `<div style="text-align:center;">
+          <div style="font-size:42px; margin-bottom:10px;">🌟 ⚡ 💎</div>
+          <p style="font-size:20px; font-weight:900; color:#059669; margin-bottom:8px;">
+            ¡Has dominado el ritmo de la ${tInfo.nombre}!
+          </p>
+          <p style="font-size:15px; font-weight:700; color:#4B5563;">
+            Tu mentor <strong>${tInfo.mentor}</strong> te otorga +30 XP y 3 Diamantes por tu velocidad.
+          </p>
+        </div>`,
+        true
+      );
+      sumarRecompensa(30, 3);
+    }
+  }, 650);
 }
 
 // CORRECCIÓN TOTAL DEL DESAFÍO RÁPIDO:
@@ -614,7 +1208,16 @@ function cerrarJuegoActivo() {
   if (arenaEl) arenaEl.style.display = 'none';
 }
 
-/* 1. MEMORIA MATEMÁTICA */
+/* 1. MEMORIA MATEMÁTICA DE HÉROES & BLOQUES */
+const HERO_MEMORY_THEMES = [
+  { name: "Iron Man", color: "#DC2626", border: "#FDE047", avatar: "IMAGEN/avatar_ironman.svg", icon: "⚡" },
+  { name: "Steve Diamante", color: "#0891B2", border: "#A5F3FC", avatar: "IMAGEN/avatar_steve.svg", icon: "⛏️" },
+  { name: "Hulk Titánico", color: "#16A34A", border: "#86EFAC", avatar: "IMAGEN/avatar_hulk.svg", icon: "🐾" },
+  { name: "Thor Cósmico", color: "#2563EB", border: "#FDE047", avatar: "IMAGEN/avatar_thor.svg", icon: "⚡" },
+  { name: "Spider-Man", color: "#E11D48", border: "#818CF8", avatar: "IMAGEN/avatar_spiderman.svg", icon: "🕸️" },
+  { name: "Alex Guerrera", color: "#D97706", border: "#FDE68A", avatar: "IMAGEN/avatar_alex.svg", icon: "🏹" }
+];
+
 function iniciarJuegoMemoria() {
   const board = document.getElementById('memoryBoard');
   if (!board) return;
@@ -626,8 +1229,16 @@ function iniciarJuegoMemoria() {
     matchedPairs: 0,
     totalPairs: 6,
     moves: 0,
+    streak: 0,
     locked: false
   };
+
+  const elMoves = document.getElementById('memoryMovesCount');
+  const elStreak = document.getElementById('memoryStreakCount');
+  const elPairs = document.getElementById('memoryPairsFound');
+  if (elMoves) elMoves.innerText = '0';
+  if (elStreak) elStreak.innerText = '0x';
+  if (elPairs) elPairs.innerText = '0 / 6';
 
   const paresData = [];
   const operacionesUsadas = new Set();
@@ -638,14 +1249,20 @@ function iniciarJuegoMemoria() {
     if (!operacionesUsadas.has(opKey)) {
       operacionesUsadas.add(opKey);
       const res = a * b;
-      paresData.push({ id: paresData.length, op: `${a} × ${b}`, res: `${res}` });
+      const theme = HERO_MEMORY_THEMES[paresData.length % HERO_MEMORY_THEMES.length];
+      paresData.push({
+        id: paresData.length,
+        op: `${a} × ${b}`,
+        res: `${res}`,
+        theme
+      });
     }
   }
 
   const deck = [];
   paresData.forEach(par => {
-    deck.push({ pairId: par.id, texto: par.op, tipo: 'operacion' });
-    deck.push({ pairId: par.id, texto: par.res, tipo: 'resultado' });
+    deck.push({ pairId: par.id, texto: par.op, tipo: 'operacion', theme: par.theme });
+    deck.push({ pairId: par.id, texto: par.res, tipo: 'resultado', theme: par.theme });
   });
 
   deck.sort(() => Math.random() - 0.5);
@@ -656,8 +1273,17 @@ function iniciarJuegoMemoria() {
     cardEl.dataset.index = index;
     cardEl.innerHTML = `
       <div class="memory-card-inner">
-        <div class="memory-card-front">❓</div>
-        <div class="memory-card-back">${item.texto}</div>
+        <div class="memory-card-front">
+          <div class="card-back-crest">
+            <img src="IMAGEN/escudo_marvel.svg" alt="Marvel Shield">
+            <span class="card-back-badge">💎 4° BÁSICO</span>
+          </div>
+        </div>
+        <div class="memory-card-back" style="border-color:${item.theme.border};">
+          <span class="mem-card-hero-tag" style="background:${item.theme.color}; color:#FFF;">${item.theme.name}</span>
+          <img src="${item.theme.avatar}" class="mem-card-icon-avatar" alt="${item.theme.name}">
+          <div class="mem-card-main-val">${item.tipo === 'operacion' ? item.texto : '= ' + item.texto}</div>
+        </div>
       </div>
     `;
 
@@ -667,8 +1293,6 @@ function iniciarJuegoMemoria() {
 
     board.appendChild(cardEl);
   });
-
-  document.getElementById('memoryMovesCount').innerText = '0';
 }
 
 function onMemoryCardClick(cardEl, item) {
@@ -683,7 +1307,8 @@ function onMemoryCardClick(cardEl, item) {
 
   if (mg.flippedCards.length === 2) {
     mg.moves++;
-    document.getElementById('memoryMovesCount').innerText = mg.moves;
+    const elMoves = document.getElementById('memoryMovesCount');
+    if (elMoves) elMoves.innerText = mg.moves;
     mg.locked = true;
 
     const [c1, c2] = mg.flippedCards;
@@ -693,17 +1318,24 @@ function onMemoryCardClick(cardEl, item) {
         c1.el.classList.add('matched');
         c2.el.classList.add('matched');
         mg.matchedPairs++;
+        mg.streak = (mg.streak || 0) + 1;
+
+        const elPairs = document.getElementById('memoryPairsFound');
+        const elStreak = document.getElementById('memoryStreakCount');
+        if (elPairs) elPairs.innerText = `${mg.matchedPairs} / ${mg.totalPairs}`;
+        if (elStreak) elStreak.innerText = `${mg.streak}x 🔥`;
+
         mg.flippedCards = [];
         mg.locked = false;
 
         if (mg.matchedPairs === mg.totalPairs) {
           window.sound.playMarvelFanfare();
           lanzarSerpentinasYBrillos();
-          sumarRecompensa(40, 5);
+          sumarRecompensa(45, 5);
           desbloquearLogro("memoria_genio");
           mostrarModalCelebracion(
-            "🧠 ¡MEMORIA DE SUPERHÉROE!",
-            `¡Increíble agilidad mental! Emparejaste todas las cartas en ${mg.moves} movimientos. ¡Ganaste +40 XP y +5 Estrellas!`
+            "🧠 ¡MEMORIA DE SUPERHÉROE MARVEL & MINECRAFT!",
+            `¡Increíble agilidad mental! Emparejaste todas las cartas en ${mg.moves} movimientos con una racha de ${mg.streak}x. ¡Ganaste +45 XP y +5 Estrellas!`
           );
         }
       }, 350);
@@ -712,6 +1344,9 @@ function onMemoryCardClick(cardEl, item) {
         window.sound.playError();
         c1.el.classList.remove('flipped');
         c2.el.classList.remove('flipped');
+        mg.streak = 0;
+        const elStreak = document.getElementById('memoryStreakCount');
+        if (elStreak) elStreak.innerText = '0x';
         mg.flippedCards = [];
         mg.locked = false;
       }, 850);
@@ -1090,54 +1725,136 @@ function verificarConstructor() {
   }
 }
 
-/* 4. DETECTIVE MATEMÁTICO */
+/* 4. DETECTIVE MATEMÁTICO: CARPETA CLASIFICADA 3D S.H.I.E.L.D. & ALDEA */
+function setDossierFolderState(isOpen) {
+  const folder = document.getElementById('shieldDossierFolder');
+  const toggleIcon = document.getElementById('folderToggleIcon');
+  const toggleText = document.getElementById('folderToggleText');
+
+  if (folder) {
+    if (isOpen) {
+      folder.classList.add('open');
+      folder.classList.remove('closed');
+      if (toggleIcon) toggleIcon.innerText = '📁';
+      if (toggleText) toggleText.innerText = 'Doblar Carpeta';
+    } else {
+      folder.classList.remove('open');
+      folder.classList.add('closed');
+      if (toggleIcon) toggleIcon.innerText = '📂';
+      if (toggleText) toggleText.innerText = 'Abrir Carpeta';
+    }
+  }
+}
+
 function iniciarJuegoDetective() {
   AppState.detectiveGame.caseIndex = 0;
+
+  // Listener para la tapa frontal abatible de la carpeta (al tocarla se abre en 3D)
+  const flap = document.getElementById('folderFrontFlap');
+  if (flap) {
+    flap.onclick = () => {
+      window.sound.playSparkle();
+      setDossierFolderState(true);
+    };
+  }
+
+  // Listener para el botón manual de abrir/cerrar carpeta
+  const btnToggle = document.getElementById('btnToggleFolderManual');
+  if (btnToggle) {
+    btnToggle.onclick = () => {
+      const folder = document.getElementById('shieldDossierFolder');
+      const isCurrentlyOpen = folder && folder.classList.contains('open');
+      window.sound.playClick();
+      setDossierFolderState(!isCurrentlyOpen);
+    };
+  }
+
+  // Comienza con la carpeta cerrada al inicio del juego
+  setDossierFolderState(false);
   cargarCasoDetective();
 }
 
 function cargarCasoDetective() {
-  const caso = CASOS_DETECTIVE[AppState.detectiveGame.caseIndex % CASOS_DETECTIVE.length];
+  const totalCasos = CASOS_DETECTIVE.length;
+  const currentNum = (AppState.detectiveGame.caseIndex % totalCasos) + 1;
+  const caso = CASOS_DETECTIVE[AppState.detectiveGame.caseIndex % totalCasos];
+
+  // Actualizar títulos e indicadores del expediente
+  const levelText = document.getElementById('detectiveCaseLevelText');
+  const tabCode = document.getElementById('folderTabCode');
+  const flapTitle = document.getElementById('flapMissionTitle');
+  const caseTitle = document.getElementById('dossierCaseTitle');
+  const stampResult = document.getElementById('caseResolvedStamp');
+
+  if (levelText) levelText.innerText = `CASO #${currentNum} (NIVEL ${currentNum} DE ${totalCasos})`;
+  if (tabCode) tabCode.innerText = `EXPEDIENTE SECRETO #00${currentNum}`;
+  if (flapTitle) flapTitle.innerText = `MISIÓN: CÓDIGO SECRETO #${currentNum}`;
+  if (caseTitle) caseTitle.innerText = `INFORME DE VIGILANCIA: CÓDIGO #${currentNum}`;
+  if (stampResult) stampResult.style.display = 'none';
+
+  // Renderizar pistas interceptadas
   const listEl = document.getElementById('detectiveCluesList');
-  listEl.innerHTML = '';
-
-  caso.pistas.forEach((pista, idx) => {
-    const item = document.createElement('div');
-    item.className = 'clue-item-card';
-    item.innerHTML = `<span>🔍 Pista ${idx + 1}:</span> <span>${pista}</span>`;
-    listEl.appendChild(item);
-  });
-
-  const optsEl = document.getElementById('detectiveSuspectsGrid');
-  optsEl.innerHTML = '';
-
-  caso.opciones.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'btn-suspect-number';
-    btn.innerText = opt;
-    btn.addEventListener('click', () => {
-      if (opt === caso.respuestaCorrecta) {
-        window.sound.playCapShieldRing();
-        window.sound.playMinecraftXp();
-        lanzarSerpentinasYBrillos();
-        sumarRecompensa(35, 4);
-        desbloquearLogro("super_detective");
-        mostrarModalCelebracion(
-          "🕵️ ¡CASO RESUELTO!",
-          `${caso.explicacion}\n\n¡Ganaste +35 XP y +4 Estrellas!`
-        );
-        AppState.detectiveGame.caseIndex++;
-        setTimeout(cargarCasoDetective, 1400);
-      } else {
-        window.sound.playError();
-        mostrarModalCelebracion(
-          "🔎 Ese sospechoso no cumple las pistas",
-          `Revisa con cuidado las condiciones matemáticas e inténtalo otra vez.`
-        );
-      }
+  if (listEl) {
+    listEl.innerHTML = '';
+    caso.pistas.forEach((pista, idx) => {
+      const item = document.createElement('div');
+      item.className = 'clue-item-card';
+      item.innerHTML = `<span>🔍 Pista ${idx + 1}:</span> <span>${pista}</span>`;
+      listEl.appendChild(item);
     });
-    optsEl.appendChild(btn);
-  });
+  }
+
+  // Renderizar botones de sospechosos
+  const optsEl = document.getElementById('detectiveSuspectsGrid');
+  if (optsEl) {
+    optsEl.innerHTML = '';
+    caso.opciones.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'btn-suspect-number';
+      btn.innerText = opt;
+      btn.addEventListener('click', () => {
+        if (opt === caso.respuestaCorrecta) {
+          window.sound.playCapShieldRing();
+          window.sound.playMinecraftXp();
+          lanzarSerpentinasYBrillos();
+
+          if (stampResult) {
+            stampResult.style.display = 'block';
+          }
+
+          sumarRecompensa(35, 4);
+          desbloquearLogro("super_detective");
+
+          mostrarModalCelebracion(
+            `🕵️ ¡CASO #${currentNum} RESUELTO!`,
+            `<div style="text-align:center;">
+              <div style="font-size:42px; margin-bottom:8px;">📁 🛡️ 💎 ✔️</div>
+              <p style="font-size:16px; font-weight:800; color:#1E3A8A; margin-bottom:12px;">
+                ${caso.explicacion}
+              </p>
+              <div style="background:#ECFDF5; border:2px solid #10B981; padding:10px 14px; border-radius:12px; font-weight:800; color:#065F46;">
+                ✨ ¡Ganaste +35 XP y +4 Estrellas! S.H.I.E.L.D. y la Aldea están a salvo.
+              </div>
+            </div>`
+          );
+
+          AppState.detectiveGame.caseIndex++;
+          setTimeout(() => {
+            // Se dobla suavemente la carpeta y carga el nuevo caso para el siguiente nivel
+            setDossierFolderState(false);
+            setTimeout(cargarCasoDetective, 450);
+          }, 1800);
+        } else {
+          window.sound.playError();
+          mostrarModalCelebracion(
+            "🔎 Sospechoso descartado",
+            `El número ${opt} no cumple todas las pistas matemáticas. ¡Revisa con lupa las condiciones e inténtalo otra vez!`
+          );
+        }
+      });
+      optsEl.appendChild(btn);
+    });
+  }
 }
 
 /* 5. BATALLA CONTRA THANOS & ENDER DRAGON (DUELO ÉPICO FUNCIONAL) */
@@ -1536,8 +2253,13 @@ function inicializarSimce() {
   if (btnReintentar) {
     btnReintentar.addEventListener('click', () => {
       window.sound.playMarvelLaser();
+      if (typeof obtenerDiezPreguntasSimceAleatorias === 'function') {
+        SIMCE_PREGUNTAS = obtenerDiezPreguntasSimceAleatorias(AppState.simce.ultimasPreguntasIds || []);
+        AppState.simce.ultimasPreguntasIds = SIMCE_PREGUNTAS.map(q => q.id);
+      }
       AppState.simce.respuestas = {};
       AppState.simce.entregado = false;
+      AppState.simce.currentQuestionIndex = 0;
       document.getElementById('simceResultsCard').style.display = 'none';
       document.getElementById('simceTestContainer').style.display = 'grid';
       renderizarSidebarSimce();
@@ -1590,7 +2312,23 @@ function mostrarPreguntaSimce(index) {
 
   renderizarSidebarSimce();
 
-  document.getElementById('simceQuestionBadge').innerText = `Pregunta ${index + 1} de 10`;
+  // Actualizar indicador de corazones Minecraft en el HUD
+  const heartsEl = document.getElementById('simceHeartsRow');
+  if (heartsEl) {
+    let heartsHtml = '';
+    for (let i = 0; i < 10; i++) {
+      if (AppState.simce.respuestas[i] !== undefined) {
+        heartsHtml += '💚'; // Misión completada
+      } else if (i === index) {
+        heartsHtml += '💛'; // Misión activa
+      } else {
+        heartsHtml += '🤍'; // Misión pendiente
+      }
+    }
+    heartsEl.innerHTML = heartsHtml;
+  }
+
+  document.getElementById('simceQuestionBadge').innerText = `Misión ${index + 1} de 10`;
   document.getElementById('simceContextBadge').innerText = q.contexto;
   document.getElementById('simceQuestionText').innerText = q.enunciado;
 
@@ -1631,127 +2369,196 @@ function renderizarDiagramaSimce(tipo, container) {
 
   let svgHtml = '';
   switch (tipo) {
+    case 'cofres_manzanas_doradas':
     case 'bolsas_manzanas':
       svgHtml = `
-        <svg viewBox="0 0 400 100" width="100%" height="100" style="max-height:100px;">
+        <svg viewBox="0 0 460 110" width="100%" height="110" style="max-height:110px;">
+          <rect x="5" y="5" width="450" height="100" rx="14" fill="#1E293B" stroke="#FDE047" stroke-width="2"/>
+          <text x="230" y="24" font-size="13" font-family="'Fredoka', cursive" font-weight="900" fill="#FDE047" text-anchor="middle">📦 4 COFRES DE ROBLE • 6 MANZANAS DORADAS POR COFRE 🍎</text>
           ${[0, 1, 2, 3].map(i => `
-            <g transform="translate(${i * 100 + 10}, 10)">
-              <rect x="0" y="15" width="75" height="70" rx="12" fill="#FEF3C7" stroke="#D97706" stroke-width="3"/>
-              <path d="M20 15 C20 0 55 0 55 15" fill="none" stroke="#D97706" stroke-width="4"/>
-              <text x="37" y="55" font-size="24" text-anchor="middle">🍎×6</text>
-              <text x="37" y="75" font-size="11" font-weight="bold" fill="#78350F" text-anchor="middle">Bolsa ${i+1}</text>
+            <g transform="translate(${i * 105 + 24}, 32)">
+              <rect x="0" y="8" width="85" height="58" rx="8" fill="#854D0E" stroke="#CA8A04" stroke-width="3"/>
+              <rect x="36" y="22" width="12" height="14" rx="2" fill="#FEF08A" stroke="#78350F" stroke-width="1.5"/>
+              <text x="42" y="54" font-size="20" text-anchor="middle">🍎×6</text>
+              <text x="42" y="76" font-size="10" font-weight="bold" fill="#FEF08A" text-anchor="middle">Cofre ${i+1}</text>
             </g>
           `).join('')}
         </svg>
       `;
       break;
 
+    case 'filas_reactores_arc':
     case 'filas_sillas':
       svgHtml = `
-        <svg viewBox="0 0 380 110" width="100%" height="110" style="max-height:110px;">
-          <rect x="10" y="5" width="360" height="100" rx="12" fill="#F0FDF4" stroke="#16A34A" stroke-width="2"/>
-          <text x="190" y="32" font-size="16" font-weight="bold" fill="#15803D" text-anchor="middle">🪑 Gimnasio: 7 filas de 8 sillas</text>
-          <g transform="translate(60, 48)">
+        <svg viewBox="0 0 460 110" width="100%" height="110" style="max-height:110px;">
+          <rect x="5" y="5" width="450" height="100" rx="14" fill="#0F172A" stroke="#38BDF8" stroke-width="2"/>
+          <text x="230" y="24" font-size="13" font-family="'Fredoka', cursive" font-weight="900" fill="#38BDF8" text-anchor="middle">🔬 HANGAR STARK: 7 FILAS × 8 REACTORES ARC DE VIBRANIUM</text>
+          <g transform="translate(42, 42)">
             ${Array.from({length: 7}).map((_, r) => `
-              <circle cx="${r * 40}" cy="10" r="12" fill="#22C55E"/>
-              <text x="${r * 40}" y="14" font-size="10" fill="white" font-weight="bold" text-anchor="middle">8</text>
+              <g transform="translate(${r * 54}, 0)">
+                <circle cx="20" cy="14" r="16" fill="#0284C7" stroke="#38BDF8" stroke-width="2"/>
+                <circle cx="20" cy="14" r="7" fill="#E0F2FE"/>
+                <text x="20" y="18" font-size="10" fill="#0F172A" font-weight="bold" text-anchor="middle">8</text>
+                <text x="20" y="44" font-size="9" fill="#93C5FD" font-weight="bold" text-anchor="middle">F${r+1}</text>
+              </g>
             `).join('')}
           </g>
-          <text x="190" y="92" font-size="12" fill="#166534" text-anchor="middle">7 grupos de 8 sillas = 7 × 8</text>
         </svg>
       `;
       break;
 
+    case 'bandejas_pociones_magicas':
     case 'bandejas_queques':
       svgHtml = `
-        <svg viewBox="0 0 400 90" width="100%" height="90">
+        <svg viewBox="0 0 460 110" width="100%" height="110" style="max-height:110px;">
+          <rect x="5" y="5" width="450" height="100" rx="14" fill="#1E1B4B" stroke="#A855F7" stroke-width="2"/>
+          <text x="230" y="24" font-size="13" font-family="'Fredoka', cursive" font-weight="900" fill="#C084FC" text-anchor="middle">⚡ ARSENAL DE ASGARD: 5 BANDEJAS × 9 POCIONES DE CURACIÓN</text>
           ${[0, 1, 2, 3, 4].map(i => `
-            <g transform="translate(${i * 80 + 5}, 10)">
-              <rect x="0" y="10" width="70" height="60" rx="8" fill="#FDF2F8" stroke="#DB2777" stroke-width="2"/>
-              <text x="35" y="44" font-size="20" text-anchor="middle">🧁×9</text>
-              <text x="35" y="62" font-size="10" font-weight="bold" fill="#9D174D" text-anchor="middle">Bandeja ${i+1}</text>
+            <g transform="translate(${i * 86 + 18}, 34)">
+              <rect x="0" y="6" width="76" height="54" rx="8" fill="#312E81" stroke="#818CF8" stroke-width="2.5"/>
+              <text x="38" y="38" font-size="22" text-anchor="middle">🧪×9</text>
+              <text x="38" y="54" font-size="10" font-weight="bold" fill="#DDD6FE" text-anchor="middle">Bandeja ${i+1}</text>
             </g>
           `).join('')}
         </svg>
       `;
       break;
 
+    case 'redes_spiderman_creepers':
     case 'sobres_laminas':
       svgHtml = `
-        <svg viewBox="0 0 380 90" width="100%" height="90">
+        <svg viewBox="0 0 460 110" width="100%" height="110" style="max-height:110px;">
+          <rect x="5" y="5" width="450" height="100" rx="14" fill="#0F172A" stroke="#EF4444" stroke-width="2"/>
+          <text x="230" y="24" font-size="13" font-family="'Fredoka', cursive" font-weight="900" fill="#F87171" text-anchor="middle">🕷️ REDES DE SPIDER-MAN: 6 REDES × 5 CREEPERS ATRAPADOS</text>
           ${[0, 1, 2, 3, 4, 5].map(i => `
-            <g transform="translate(${i * 62 + 5}, 10)">
-              <rect x="0" y="5" width="54" height="70" rx="6" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
-              <text x="27" y="42" font-size="18" text-anchor="middle">🏷️×5</text>
-              <text x="27" y="62" font-size="10" font-weight="bold" fill="#1E40AF" text-anchor="middle">Sobre ${i+1}</text>
+            <g transform="translate(${i * 72 + 16}, 34)">
+              <rect x="0" y="4" width="62" height="58" rx="8" fill="#1E293B" stroke="#DC2626" stroke-width="2"/>
+              <text x="31" y="36" font-size="22" text-anchor="middle">🕸️×5</text>
+              <text x="31" y="54" font-size="10" font-weight="bold" fill="#FCA5A5" text-anchor="middle">Red ${i+1}</text>
             </g>
           `).join('')}
         </svg>
       `;
       break;
 
+    case 'mina_galerias_diamante':
     case 'huerta_lechugas':
       svgHtml = `
-        <svg viewBox="0 0 380 90" width="100%" height="90">
-          <rect x="10" y="5" width="360" height="80" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="2"/>
-          <text x="190" y="32" font-size="16" font-weight="bold" fill="#854D0E" text-anchor="middle">🌱 8 hileras con 6 lechugas cada una</text>
-          <text x="190" y="62" font-size="20" text-anchor="middle">🥬 🥬 🥬 🥬 🥬 🥬 🥬 🥬</text>
+        <svg viewBox="0 0 460 110" width="100%" height="110" style="max-height:110px;">
+          <rect x="5" y="5" width="450" height="100" rx="14" fill="#090D16" stroke="#22D3EE" stroke-width="2"/>
+          <text x="230" y="24" font-size="13" font-family="'Fredoka', cursive" font-weight="900" fill="#22D3EE" text-anchor="middle">💎 MINA SUBTERRÁNEA: 8 GALERÍAS × 6 BLOQUES DE DIAMANTE</text>
+          <g transform="translate(18, 38)">
+            ${Array.from({length: 8}).map((_, r) => `
+              <g transform="translate(${r * 54}, 0)">
+                <rect x="2" y="2" width="46" height="54" rx="6" fill="#1E293B" stroke="#0891B2" stroke-width="2"/>
+                <text x="25" y="32" font-size="20" text-anchor="middle">💎</text>
+                <text x="25" y="48" font-size="9" fill="#67E8F9" font-weight="bold" text-anchor="middle">×6</text>
+              </g>
+            `).join('')}
+          </g>
         </svg>
       `;
       break;
 
+    case 'asientos_quinjet_marvel':
     case 'bus_escolar':
       svgHtml = `
-        <svg viewBox="0 0 380 90" width="100%" height="90">
-          <rect x="20" y="10" width="340" height="70" rx="14" fill="#FEF3C7" stroke="#D97706" stroke-width="3"/>
-          <text x="190" y="44" font-size="26" text-anchor="middle">🚌 9 filas × 4 asientos</text>
-          <text x="190" y="68" font-size="13" font-weight="bold" fill="#92400E" text-anchor="middle">Capacidad para 4° Básico</text>
+        <svg viewBox="0 0 460 110" width="100%" height="110" style="max-height:110px;">
+          <rect x="5" y="5" width="450" height="100" rx="14" fill="#0F172A" stroke="#3B82F6" stroke-width="2"/>
+          <text x="230" y="24" font-size="13" font-family="'Fredoka', cursive" font-weight="900" fill="#93C5FD" text-anchor="middle">🚀 QUINJET VENGADORES: 9 FILAS × 4 ASIENTOS BLINDADOS</text>
+          <g transform="translate(20, 36)">
+            ${Array.from({length: 9}).map((_, r) => `
+              <g transform="translate(${r * 48}, 0)">
+                <rect x="2" y="2" width="40" height="56" rx="6" fill="#1E3A8A" stroke="#60A5FA" stroke-width="1.5"/>
+                <text x="22" y="26" font-size="14" text-anchor="middle">💺</text>
+                <text x="22" y="44" font-size="11" fill="#FFFFFF" font-weight="bold" text-anchor="middle">4</text>
+                <text x="22" y="54" font-size="8" fill="#93C5FD" text-anchor="middle">F${r+1}</text>
+              </g>
+            `).join('')}
+          </g>
         </svg>
       `;
       break;
 
+    case 'boveda_vibranium_wakanda':
     case 'ahorro_alcancia':
       svgHtml = `
-        <svg viewBox="0 0 380 90" width="100%" height="90">
-          <rect x="10" y="10" width="360" height="70" rx="12" fill="#FDF2F8" stroke="#E11D48" stroke-width="2"/>
-          <text x="190" y="42" font-size="24" text-anchor="middle">🐷 7 semanas × $300 cada una</text>
-          <text x="190" y="66" font-size="13" font-weight="bold" fill="#BE123C" text-anchor="middle">¡Ahorro semanal constante!</text>
+        <svg viewBox="0 0 460 110" width="100%" height="110" style="max-height:110px;">
+          <rect x="5" y="5" width="450" height="100" rx="14" fill="#1E1B4B" stroke="#D946EF" stroke-width="2"/>
+          <text x="230" y="24" font-size="13" font-family="'Fredoka', cursive" font-weight="900" fill="#F0ABFC" text-anchor="middle">🐾 BÓVEDA DE WAKANDA: 7 SEMANAS × 300 LINGOTES DE VIBRANIUM</text>
+          <g transform="translate(25, 36)">
+            ${Array.from({length: 7}).map((_, r) => `
+              <g transform="translate(${r * 58}, 0)">
+                <rect x="2" y="2" width="50" height="56" rx="8" fill="#4C1D95" stroke="#C084FC" stroke-width="2"/>
+                <text x="27" y="26" font-size="14" text-anchor="middle">🪙</text>
+                <text x="27" y="42" font-size="10" fill="#F5D0FE" font-weight="bold" text-anchor="middle">300</text>
+                <text x="27" y="53" font-size="8" fill="#DDD6FE" text-anchor="middle">Sem ${r+1}</text>
+              </g>
+            `).join('')}
+          </g>
         </svg>
       `;
       break;
 
+    case 'cajas_flechas_alex':
     case 'cajas_lapices':
       svgHtml = `
-        <svg viewBox="0 0 380 90" width="100%" height="90">
-          <rect x="10" y="10" width="360" height="70" rx="12" fill="#F0FDFA" stroke="#0D9488" stroke-width="2"/>
-          <text x="190" y="42" font-size="24" text-anchor="middle">✏️ 8 cajas con 10 lápices cada una</text>
-          <text x="190" y="66" font-size="13" font-weight="bold" fill="#0F766E" text-anchor="middle">8 × 10 lápices de colores</text>
+        <svg viewBox="0 0 460 110" width="100%" height="110" style="max-height:110px;">
+          <rect x="5" y="5" width="450" height="100" rx="14" fill="#0F172A" stroke="#10B981" stroke-width="2"/>
+          <text x="230" y="24" font-size="13" font-family="'Fredoka', cursive" font-weight="900" fill="#34D399" text-anchor="middle">🏹 ARMERÍA DE ALEX: 8 CAJAS DE HIERRO × 10 FLECHAS MÁGICAS</text>
+          <g transform="translate(18, 38)">
+            ${Array.from({length: 8}).map((_, r) => `
+              <g transform="translate(${r * 54}, 0)">
+                <rect x="2" y="2" width="46" height="54" rx="6" fill="#064E3B" stroke="#10B981" stroke-width="2"/>
+                <text x="25" y="30" font-size="18" text-anchor="middle">🏹</text>
+                <text x="25" y="48" font-size="11" fill="#A7F3D0" font-weight="bold" text-anchor="middle">×10</text>
+              </g>
+            `).join('')}
+          </g>
         </svg>
       `;
       break;
 
+    case 'patrulla_portal_nether':
     case 'pista_atletica':
       svgHtml = `
-        <svg viewBox="0 0 380 90" width="100%" height="90">
-          <rect x="10" y="10" width="360" height="70" rx="12" fill="#FFF7ED" stroke="#EA580C" stroke-width="2"/>
-          <text x="190" y="42" font-size="24" text-anchor="middle">🏃‍♂️ 3 alumnos × 7 vueltas</text>
-          <text x="190" y="66" font-size="13" font-weight="bold" fill="#C2410C" text-anchor="middle">7 + 7 + 7 = 3 × 7</text>
+        <svg viewBox="0 0 460 110" width="100%" height="110" style="max-height:110px;">
+          <rect x="5" y="5" width="450" height="100" rx="14" fill="#180828" stroke="#E11D48" stroke-width="2"/>
+          <text x="230" y="24" font-size="13" font-family="'Fredoka', cursive" font-weight="900" fill="#FB7185" text-anchor="middle">⭐ PATRULLA PORTAL NETHER: 3 SUPERHÉROES × 7 VUELTAS COMPLETAS</text>
+          <g transform="translate(60, 36)">
+            ${['Capitana Marvel ⭐', 'Thor ⚡', 'Hulk Smash 💚'].map((hero, i) => `
+              <g transform="translate(${i * 120}, 0)">
+                <rect x="0" y="2" width="105" height="56" rx="10" fill="#4C0519" stroke="#F43F5E" stroke-width="2"/>
+                <text x="52" y="26" font-size="12" fill="#FFE4E6" font-weight="bold" text-anchor="middle">${hero}</text>
+                <text x="52" y="48" font-size="16" fill="#FDE047" font-weight="bold" text-anchor="middle">7 Vueltas</text>
+              </g>
+            `).join('')}
+          </g>
         </svg>
       `;
       break;
 
+    case 'estantes_libros_strange':
     case 'repisa_libros':
       svgHtml = `
-        <svg viewBox="0 0 380 90" width="100%" height="90">
-          <rect x="10" y="10" width="360" height="70" rx="12" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"/>
-          <text x="190" y="42" font-size="24" text-anchor="middle">📚 6 repisas × 8 historietas</text>
-          <text x="190" y="66" font-size="13" font-weight="bold" fill="#3730A3" text-anchor="middle">Biblioteca Escolar</text>
+        <svg viewBox="0 0 460 110" width="100%" height="110" style="max-height:110px;">
+          <rect x="5" y="5" width="450" height="100" rx="14" fill="#0A0F1D" stroke="#8B5CF6" stroke-width="2"/>
+          <text x="230" y="24" font-size="13" font-family="'Fredoka', cursive" font-weight="900" fill="#A78BFA" text-anchor="middle">📖 SANCTUM SANCTORUM: 6 ESTANTES × 8 LIBROS DE ENCANTAMIENTO</text>
+          <g transform="translate(24, 38)">
+            ${Array.from({length: 6}).map((_, r) => `
+              <g transform="translate(${r * 70}, 0)">
+                <rect x="2" y="2" width="62" height="54" rx="8" fill="#2E1065" stroke="#A855F7" stroke-width="2"/>
+                <text x="33" y="30" font-size="20" text-anchor="middle">📚</text>
+                <text x="33" y="48" font-size="11" fill="#DDD6FE" font-weight="bold" text-anchor="middle">×8 Libros</text>
+              </g>
+            `).join('')}
+          </g>
         </svg>
       `;
       break;
 
     default:
-      svgHtml = `<div style="font-size:32px;">📐 🔢 ✏️</div>`;
+      svgHtml = `<div style="font-size:32px;">📐 🔢 💎</div>`;
   }
 
   container.innerHTML = svgHtml;
@@ -1762,10 +2569,47 @@ function evaluarSimce() {
   const respondidas = Object.keys(AppState.simce.respuestas).length;
 
   if (respondidas < totalPreguntas) {
-    const confirmEntrega = confirm(
-      `Has respondido ${respondidas} de ${totalPreguntas} preguntas.\n¿Estás seguro de que deseas finalizar el ensayo ahora? Te recomendamos responder todas.`
+    window.sound.playError();
+    const faltantes = totalPreguntas - respondidas;
+    let primeraSinResponder = 0;
+    for (let i = 0; i < totalPreguntas; i++) {
+      if (AppState.simce.respuestas[i] === undefined) {
+        primeraSinResponder = i;
+        break;
+      }
+    }
+
+    mostrarModalCelebracion(
+      "⚠️ ¡DEBES COMPLETAR TODO EL ENSAYO!",
+      `<div style="text-align:center;">
+        <div style="font-size:44px; margin-bottom:10px;">📝 ⏳ ❌</div>
+        <p style="font-size:18px; font-weight:800; color:#DC2626; margin-bottom:10px;">
+          ¡No puedes entregar el ensayo todavía!
+        </p>
+        <p style="font-size:15px; font-weight:700; color:#1E293B; margin-bottom:14px;">
+          Has respondido <strong>${respondidas} de ${totalPreguntas}</strong> preguntas. 
+          Debes contestar <strong>todas las 10 preguntas</strong> para poder finalizar y obtener tu puntaje oficial SIMCE.
+        </p>
+        <div style="background:#FEE2E2; border:2px solid #EF4444; border-radius:10px; padding:10px; color:#991B1B; font-weight:800; margin-bottom:16px;">
+          Te faltan ${faltantes} ${faltantes === 1 ? 'pregunta' : 'preguntas'} por responder.
+        </div>
+        <button type="button" class="btn-stepper" id="btnIrAPreguntaFaltante" style="width:auto; padding:10px 22px; border-radius:999px; background:#2563EB; color:#FFF; font-size:15px; font-weight:900;">
+          ✏️ Ir a Responder la Pregunta ${primeraSinResponder + 1}
+        </button>
+      </div>`,
+      true
     );
-    if (!confirmEntrega) return;
+
+    setTimeout(() => {
+      const btnIr = document.getElementById('btnIrAPreguntaFaltante');
+      if (btnIr) {
+        btnIr.onclick = () => {
+          cerrarModalCelebracion();
+          mostrarPreguntaSimce(primeraSinResponder);
+        };
+      }
+    }, 100);
+    return;
   }
 
   window.sound.playMarvelFanfare();
@@ -2045,6 +2889,7 @@ function initMenuInteractiveBackground() {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
     mouse.active = true;
+
     if (Math.random() < 0.35) {
       particles.push(crearParticulaMouse(mouse.x, mouse.y));
     }
@@ -2209,5 +3054,54 @@ function initMenuInteractiveBackground() {
   }
 
   requestAnimationFrame(loop);
+}
+
+// ============================================================================
+// PARALLAX 3D REACTIVO AL MOVIMIENTO DEL MOUSE PARA EL FONDO DE BATALLA
+// ============================================================================
+function initMouseBackgroundParallax() {
+  const panoImg = document.getElementById('panoramaBattleImg');
+  const clouds = document.querySelector('.slowmo-floating-clouds');
+  if (!panoImg) return;
+
+  let targetX = 0;
+  let targetY = 0;
+  let currentX = 0;
+  let currentY = 0;
+
+  window.addEventListener('mousemove', (e) => {
+    const w = window.innerWidth || 1920;
+    const h = window.innerHeight || 1080;
+    // Coordenadas normalizadas entre -0.5 y 0.5 con el centro de la pantalla en 0
+    targetX = (e.clientX / w) - 0.5;
+    targetY = (e.clientY / h) - 0.5;
+  }, { passive: true });
+
+  window.addEventListener('mouseleave', () => {
+    targetX = 0;
+    targetY = 0;
+  });
+
+  function animLoop() {
+    // LERP smoothing para movimiento continuo, orgánico y sedoso en cámara lenta
+    currentX += (targetX - currentX) * 0.08;
+    currentY += (targetY - currentY) * 0.08;
+
+    // Desplazamiento dinámico y rotación 3D del póster escénico de batalla
+    const shiftX = currentX * -44; // px
+    const shiftY = currentY * -28; // px
+    const rotY = currentX * 10;    // deg
+    const rotX = currentY * -8;    // deg
+
+    panoImg.style.transform = `scale(1.15) translate3d(${shiftX.toFixed(2)}px, ${shiftY.toFixed(2)}px, 0) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
+
+    if (clouds) {
+      clouds.style.transform = `translate3d(${(currentX * 50).toFixed(2)}px, ${(currentY * 30).toFixed(2)}px, 0)`;
+    }
+
+    requestAnimationFrame(animLoop);
+  }
+
+  requestAnimationFrame(animLoop);
 }
 

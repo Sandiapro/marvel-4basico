@@ -16,25 +16,24 @@
   <!-- Canvas para Confeti de Celebración -->
   <canvas id="confettiCanvas"></canvas>
 
-  <!-- Canvas para Fondo Interactivo Temático Marvel & Minecraft -->
-  <canvas id="menuInteractiveCanvas"></canvas>
-
-  <!-- Fondo Escénico Animado y Desenfoque Temático Marvel & Minecraft -->
-  <div class="app-scenic-ambient-bg">
-    <div class="scenic-mesh-aurora"></div>
-    <!-- Personajes Heroicos y Bloques Flotando con Movimiento en el Fondo -->
-    <div class="scenic-floating-heroes">
-      <img src="IMAGEN/avatar_spiderman.svg" class="scenic-hero hero-1" alt="Spider-Man">
-      <img src="IMAGEN/avatar_gwen.svg" class="scenic-hero hero-2" alt="Ghost-Spider">
-      <img src="IMAGEN/avatar_ironman.svg" class="scenic-hero hero-3" alt="Iron Man">
-      <img src="IMAGEN/avatar_steve.svg" class="scenic-hero hero-4" alt="Steve">
-      <img src="IMAGEN/avatar_alex.svg" class="scenic-hero hero-5" alt="Alex">
-      <img src="IMAGEN/avatar_capitanamarvel.svg" class="scenic-hero hero-6" alt="Capitana Marvel">
-      <img src="IMAGEN/bloque_diamante.svg" class="scenic-hero block-1" alt="Diamante">
-      <img src="IMAGEN/bloque_minecraft.svg" class="scenic-hero block-2" alt="Bloque Minecraft">
-      <img src="IMAGEN/reactor_arc.svg" class="scenic-hero block-3" alt="Reactor">
-      <img src="IMAGEN/espada_diamante.svg" class="scenic-hero block-4" alt="Espada">
+  <!-- ========================================================================
+       ESCENARIO CINEMÁTICO: FONDO ATMOSFÉRICO MARVEL & MINECRAFT SUAVE Y BORROSO
+       ======================================================================== -->
+  <div class="scenic-3d-battlefield" id="scenicBattlefield">
+    <!-- Capa 1: Imagen Panorámica con Desenfoque Suave y Viñeta de Contraste -->
+    <div class="battlefield-layer-panorama">
+      <img src="IMAGEN/minec_avengers_poster.png" alt="Minecraft Marvel Scenic Background" class="panorama-battle-img" id="panoramaBattleImg">
+      <div class="panorama-vignette"></div>
+      <div class="slowmo-floating-clouds">
+        <div class="voxel-cloud cloud-1"></div>
+        <div class="voxel-cloud cloud-2"></div>
+      </div>
     </div>
+
+    <!-- Capa 2: Canvas Interactivo con Orbes XP, Rayos y Diamantes Cósmicos Sutiles -->
+    <canvas id="menuInteractiveCanvas"></canvas>
+
+    <!-- Capa 3: Filtro de Contraste Oscuro y Difuminado para Protección de Textos -->
     <div class="scenic-frosted-overlay"></div>
   </div>
 
@@ -135,8 +134,6 @@
     <section class="app-view active" id="view-menu">
       <!-- Hero Banner Marvel & Minecraft -->
       <div class="welcome-hero-banner" style="background: linear-gradient(135deg, #B91C1C 0%, #1D4ED8 50%, #065F46 100%); border: 3px solid #FDE047; position:relative;">
-        <img src="IMAGEN/bloque_diamante.svg" style="position:absolute; right:130px; top:15px; width:52px; height:52px; animation:bobCorner 3s infinite alternate;" alt="Diamante">
-        <img src="IMAGEN/escudo_marvel.svg" style="position:absolute; right:20px; top:15px; width:52px; height:52px; animation:bobCorner 3s infinite alternate 0.5s;" alt="Escudo">
         <div class="welcome-info">
           <h2>¡Bienvenido, <span id="heroNombreEstudiante">Héroe</span>! 🦸‍♂️⛏️</h2>
           <p>Entrena con el poder de los Vengadores y craftea multiplicaciones legendarias con herramientas de diamante. ¡Prepárate para vencer en el ensayo oficial tipo SIMCE!</p>
@@ -237,38 +234,114 @@
     </section>
 
     <!-- ----------------------------------------------------------------------
-         VISTA 2: APRENDER TABLAS (CONCRETO - PICTÓRICO - SIMBÓLICO)
+         VISTA 2: APRENDER TABLAS (CONCRETO - PICTÓRICO - SIMBÓLICO CON HÉROES)
          ---------------------------------------------------------------------- -->
     <section class="app-view" id="view-aprender">
       <!-- Selector Horizontal de Tablas -->
       <div class="table-learning-header">
-        <h2 style="font-size: 28px; margin-bottom: 6px;">📘 Taller Interactivo de Multiplicación</h2>
-        <p style="color:var(--text-muted); font-weight:700;">Selecciona una tabla para explorar sus grupos, patrones y secretos.</p>
+        <h2 style="font-size: 30px; margin-bottom: 6px;">📘 Academia de Multiplicación Marvel & Minecraft</h2>
+        <p style="color:#CBD5E1; font-weight:700;">Entrena con cada superhéroe mentor, craftea grupos interactivos y domina los secretos del 2 al 10.</p>
+      </div>
+
+      <!-- Barra de Estado de Desbloqueo del SIMCE en Aprender Tablas -->
+      <div class="simce-unlock-progress-banner" id="simceUnlockBanner">
+        <div class="simce-unlock-info">
+          <div class="simce-unlock-title">
+            <span class="simce-unlock-icon">🎯</span>
+            <strong>Misión Ensayo SIMCE:</strong>
+            <span id="simceUnlockStatusText">Completa el entrenamiento en las 9 tablas (del 2 al 10) para desbloquear el examen oficial.</span>
+          </div>
+          <div class="simce-unlock-counter" id="simceUnlockCounter">0 / 9 Tablas Dominadas</div>
+        </div>
+        <div class="simce-unlock-bar-track">
+          <div class="simce-unlock-bar-fill" id="simceUnlockBarFill" style="width: 0%;"></div>
+        </div>
       </div>
 
       <div class="table-selector-strip" id="tableSelectorStrip">
         <!-- Generado dinámicamente con JS (Tabla del 2 al 10) -->
       </div>
 
+      <!-- Banner del Mentor Heroico Activo de la Tabla -->
+      <div class="table-mentor-banner" id="tableMentorBanner">
+        <div class="mentor-avatar-badge">
+          <img id="mentorAvatarImg" src="IMAGEN/avatar_spiderman.svg" alt="Mentor">
+          <div class="mentor-pulse-ring"></div>
+        </div>
+        <div class="mentor-text-info">
+          <div class="mentor-universe-tag" id="mentorUniverseTag">MARVEL SPIDER-VERSE</div>
+          <h3 id="mentorNameTitle">Spider-Man & Ghost-Spider</h3>
+          <p id="mentorMottoText">"¡Lanza telarañas dobles a máxima velocidad! Multiplicar por 2 es calcular el doble exacto."</p>
+        </div>
+        <div class="mentor-actions-cluster">
+          <button type="button" class="btn-rhythm-action" id="btnRhythmWalkthrough" title="Entrenar la tabla en racha animada automática con música y chispas">
+            <span class="rhythm-icon">⚡</span>
+            <span>▶️ Racha Rítmica Animada</span>
+          </button>
+          <button type="button" class="btn-rhythm-action btn-master-table" id="btnMasterCurrentTable" title="Marcar esta tabla como dominada y avanzar hacia el SIMCE" style="background: linear-gradient(135deg, #10B981, #059669); border-color: #34D399;">
+            <span class="rhythm-icon">⭐</span>
+            <span id="btnMasterTableText">¡Marcar como Dominada!</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Panel Dividido: Visualización Concreta vs Patrones y Práctica -->
       <div class="table-view-grid">
-        <!-- Columna Izquierda: Visualizador Pictórico de Grupos -->
+        <!-- Columna Izquierda: Visualizador 3D Interactivo y Grupos Animados -->
         <div class="card-visual-learning">
           <div class="visual-controls-bar">
             <div class="math-expression-big" id="mathExpressionDisplay">2 × 3 = 6</div>
             <div class="stepper-btn-group">
               <button class="btn-stepper" id="btnStepDown" title="Disminuir multiplicador">−</button>
               <button class="btn-stepper" id="btnStepUp" title="Aumentar multiplicador">+</button>
-              <button class="btn-stepper" id="btnToggleCommutative" title="Cambiar orden (Propiedad Conmutativa)" style="width: auto; padding: 0 12px; font-size: 13px; border-radius: var(--radius-full);">
-                🔄 Invertir
+              <button class="btn-stepper" id="btnToggleCommutative" title="Cambiar orden (Propiedad Conmutativa en 3D)" style="width: auto; padding: 0 14px; font-size: 13px; border-radius: var(--radius-full);">
+                🔄 Invertir 3D
               </button>
             </div>
           </div>
 
-          <!-- Escenario Pictórico de Canastas / Objetos -->
-          <div class="groups-stage-box" id="groupsStageBox">
-            <!-- Canastas con objetos SVG / Emojis se insertan dinámicamente -->
+          <!-- Selector de Modo de Aprendizaje: Cubos 3D vs Grupos -->
+          <div class="learning-mode-selector">
+            <button type="button" class="btn-mode-tab active" id="btnMode3D">
+              <span>🧊</span> Modo Cubos 3D Voxel (Girar y Mover)
+            </button>
+            <button type="button" class="btn-mode-tab" id="btnModeGrupos">
+              <span>📦</span> Modo Grupos del Mentor
+            </button>
           </div>
+
+          <!-- Controles del Escenario 3D Interactivo -->
+          <div class="voxel-3d-toolbar" id="voxel3DToolbar">
+            <button type="button" class="btn-3d-tool active" id="btnToggleAutoSpin" title="Activar / Pausar giro continuo en 3D">
+              <span>🔄</span> Auto-Giro
+            </button>
+            <button type="button" class="btn-3d-tool" id="btnExplode3DCubes" title="Separar los grupos de cubos para ver cada grupo claramente">
+              <span>💥</span> Separar Grupos
+            </button>
+            <button type="button" class="btn-3d-tool" id="btnReset3DView" title="Volver a la perspectiva isométrica">
+              <span>🎯</span> Centrar Vista
+            </button>
+          </div>
+
+          <!-- Guía Interactiva para Tocar, Arrastrar y Contar -->
+          <div class="interactive-tap-guide" id="interactiveTapGuide">
+            <span>🖱️ <strong>Arrastra con el ratón o desliza con el dedo</strong> para girar en 360° en 3D • ¡Toca cualquier cubo para contarlo con notas musicales! 🎵</span>
+          </div>
+
+          <!-- Escenario 3D Voxel Interactivo (Con perspectiva real y rotación 360°) -->
+          <div class="voxel-3d-viewport" id="voxel3DViewport" title="Haz clic y arrastra para rotar los cubos en 3D">
+            <div class="voxel-3d-scene" id="voxel3DScene">
+              <!-- Cubos 3D inyectados dinámicamente con JS -->
+            </div>
+          </div>
+
+          <!-- Escenario Pictórico Alternativo de Grupos Stark / Cofres Minecraft -->
+          <div class="groups-stage-box" id="groupsStageBox" style="display:none;">
+            <!-- Pods con objetos animados se insertan dinámicamente -->
+          </div>
+
+          <!-- Chip de Conteo Interactivo en Vivo -->
+          <div class="interactive-count-chip" id="interactiveCountChip" style="display:none;"></div>
 
           <!-- Representación Simbólica (Suma Iterada) -->
           <div class="iterated-sum-box" id="iteratedSumDisplay">
@@ -276,11 +349,11 @@
           </div>
         </div>
 
-        <!-- Columna Derecha: Patrones, Trucos y Desafío Rápido -->
+        <!-- Columna Derecha: Patrones, Trucos 3D y Desafío Rápido -->
         <div class="card-table-practice">
-          <div class="tip-banner-card">
+          <div class="tip-banner-card" id="tipBannerCard">
             <div class="tip-banner-header">
-              <span>✨</span>
+              <span id="tipBannerIcon">✨</span>
               <span id="tablaTituloActivo">Tabla del 2</span>
             </div>
             <p class="tip-banner-text" id="tablaPatronActivo">
@@ -298,11 +371,11 @@
           </div>
 
           <!-- Botones de Acción -->
-          <div style="display: flex; gap: 10px; margin-top: auto;">
+          <div style="display: flex; gap: 10px; margin-top: auto; flex-wrap: wrap;">
             <button type="button" class="btn-stepper" id="btnPistaHeroica" style="width:auto; padding:0 14px; border-radius:var(--radius-md); font-size:14px;" title="Pedir pista heroica">
               🛡️ Pista Heroica
             </button>
-            <button type="button" class="btn-launch-quiz" id="btnLaunchTableQuiz">
+            <button type="button" class="btn-launch-quiz" id="btnLaunchTableQuiz" style="flex:1;">
               <span>🎯 Desafío Rápido</span>
             </button>
           </div>
@@ -384,10 +457,21 @@
           </div>
         </div>
 
-        <!-- Subpantalla 1: Memoria -->
+        <!-- Subpantalla 1: Memoria de Héroes y Bloques -->
         <div class="game-specific-container" id="arenaMemoria">
-          <div style="text-align:center; margin-bottom:16px;">
-            <span style="font-weight:800; color:var(--text-muted); font-size:16px;">Movimientos realizados: <strong id="memoryMovesCount" style="color:var(--primary); font-size:20px;">0</strong></span>
+          <div class="memory-top-hud">
+            <div class="stat-pill" style="background:#0F172A; border:2px solid #38BDF8; color:#7DD3FC;">
+              <span>🃏 Movimientos:</span> <strong id="memoryMovesCount" style="color:#FFFFFF; font-size:18px;">0</strong>
+            </div>
+            <div class="stat-pill" style="background:#0F172A; border:2px solid #F59E0B; color:#FDE047;">
+              <span>🔥 Racha:</span> <strong id="memoryStreakCount" style="color:#FFFFFF; font-size:18px;">0x</strong>
+            </div>
+            <div class="stat-pill" style="background:#0F172A; border:2px solid #10B981; color:#A7F3D0;">
+              <span>⭐ Parejas:</span> <strong id="memoryPairsFound" style="color:#FFFFFF; font-size:18px;">0 / 6</strong>
+            </div>
+          </div>
+          <div class="memory-instruction-banner">
+            <span>✨ ¡Encuentra cada cálculo de multiplicación con su resultado legendario de Marvel & Minecraft! ✨</span>
           </div>
           <div class="memory-board" id="memoryBoard"></div>
         </div>
@@ -453,21 +537,71 @@
           </button>
         </div>
 
-        <!-- Subpantalla 4: Misión S.H.I.E.L.D. y Aldea -->
+        <!-- Subpantalla 4: Misión S.H.I.E.L.D. y Aldea (Carpeta 3D Clasificada) -->
         <div class="game-specific-container" id="arenaDetective">
-          <div class="detective-wrapper">
-            <div class="detective-badge-header" style="background:#0F172A; border:3px solid #F59E0B; color:#FFFFFF;">
-              <span style="font-size:42px;">📁</span>
-              <div>
-                <h3 style="font-size:22px; color:#FDE047;">Dossier Clasificado de S.H.I.E.L.D. & Aldea Secreta</h3>
-                <p style="font-size:14px; font-weight:700; color:#E2E8F0;">Informes interceptados por Nick Fury y el Aldeano Sabio. ¡Descubre el código culpable!</p>
+          <div class="detective-header-bar">
+            <div class="detective-case-level-pill" id="detectiveLevelPill">
+              <span>📁 EXPEDIENTE S.H.I.E.L.D.:</span>
+              <strong id="detectiveCaseLevelText" style="color:#FDE047;">CASO #1 (NIVEL 1 DE 5)</strong>
+            </div>
+            <button type="button" class="btn-folder-toggle" id="btnToggleFolderManual" title="Abrir o doblar la carpeta clasificada">
+              <span id="folderToggleIcon">📂</span>
+              <span id="folderToggleText">Abrir Carpeta</span>
+            </button>
+          </div>
+
+          <!-- Componente Carpeta Clasificada 3D S.H.I.E.L.D. & Aldea -->
+          <div class="shield-dossier-wrapper" id="shieldDossierWrapper">
+            <div class="shield-dossier-folder closed" id="shieldDossierFolder">
+              <!-- Pestaña Superior de la Carpeta Manila -->
+              <div class="folder-top-tab">
+                <span class="folder-tab-seal">🛡️ S.H.I.E.L.D.</span>
+                <span class="folder-tab-code" id="folderTabCode">EXPEDIENTE SECRETO #001</span>
+                <span class="folder-tab-badge">💎 ALDEA</span>
+              </div>
+
+              <!-- Tapa Frontal Abatible en 3D (Cerrada al inicio, se abre al tocar) -->
+              <div class="folder-front-flap" id="folderFrontFlap">
+                <div class="flap-insignia-center">
+                  <img src="IMAGEN/escudo_marvel.svg" class="flap-shield-logo" alt="Escudo">
+                  <div class="flap-classified-stamp">ALTO SECRETO</div>
+                  <div class="flap-mission-title" id="flapMissionTitle">MISIÓN: SOSPECHOSO MATEMÁTICO</div>
+                  <div class="flap-agency-label">DIVISIÓN MATEMÁTICA INTERDIMENSIONAL • 4° BÁSICO</div>
+                </div>
+                <div class="folder-tap-prompt-pulse">
+                  <span class="prompt-finger">👆</span>
+                  <span class="prompt-text">¡TOCA LA CARPETA PARA DESCLASIFICAR Y ABRIR EL CASO!</span>
+                  <span class="prompt-icon">📂</span>
+                </div>
+              </div>
+
+              <!-- Documento Interior Deslizante (Sale al abrirse la carpeta) -->
+              <div class="dossier-paper-sheet" id="dossierPaperSheet">
+                <div class="sheet-confidential-header">
+                  <div class="sheet-header-left">
+                    <span class="sheet-shield-badge">S.H.I.E.L.D. & ALDEA REPORT</span>
+                    <h3 id="dossierCaseTitle">INFORME DE VIGILANCIA: CÓDIGO SOSPECHOSO</h3>
+                  </div>
+                  <div class="sheet-stamp-top">CONFIDENCIAL</div>
+                </div>
+
+                <div class="sheet-clues-section">
+                  <div class="sheet-clues-title">🔍 PISTAS DE NICK FURY Y EL ALDEANO SABIO:</div>
+                  <div class="clues-list" id="detectiveCluesList"></div>
+                </div>
+
+                <div class="sheet-suspects-section">
+                  <h4 class="sheet-question-text">¿Cuál es el número sospechoso que cumple todas las pistas?</h4>
+                  <div class="detective-options-grid" id="detectiveSuspectsGrid"></div>
+                </div>
+
+                <!-- Gran Sello Animado de CASO RESUELTO -->
+                <div class="case-resolved-stamp" id="caseResolvedStamp" style="display:none;">
+                  <span>¡CASO RESUELTO!</span>
+                  <small>VERIFICADO POR S.H.I.E.L.D. ✔️</small>
+                </div>
               </div>
             </div>
-
-            <div class="clues-list" id="detectiveCluesList"></div>
-
-            <h4 style="font-size:19px; margin-bottom:12px; text-align:center;">¿Cuál es el número sospechoso?</h4>
-            <div class="detective-options-grid" id="detectiveSuspectsGrid"></div>
           </div>
         </div>
 
@@ -583,14 +717,19 @@
          VISTA 5: ENSAYO MATEMÁTICO TIPO SIMCE 4° BÁSICO
          ---------------------------------------------------------------------- -->
     <section class="app-view" id="view-simce">
-      <!-- Banner Oficial SIMCE -->
-      <div class="simce-header-banner">
+      <!-- Banner Oficial SIMCE Marvel & Minecraft -->
+      <div class="simce-header-banner" style="background: linear-gradient(135deg, #1E1B4B 0%, #1E3A8A 50%, #064E3B 100%); border: 3px solid #FDE047;">
         <div class="simce-header-info">
-          <h2><span>🇨🇱</span> Ensayo Matemático Tipo SIMCE • 4° Básico</h2>
-          <p>Situaciones contextualizadas de la vida cotidiana para evaluar la multiplicación y resolución de problemas.</p>
+          <h2><span>🛡️ 🇨🇱 ⛏️</span> Ensayo Matemático SIMCE • Misiones Marvel & Minecraft</h2>
+          <p>Resuelve las 10 misiones estratégicas de multiplicación en el universo de los Vengadores y el Overworld de 4° Básico.</p>
         </div>
-        <div class="simce-counter-pill" id="simceCounterPill">
-          0 de 10 respondidas
+        <div class="simce-hud-indicators">
+          <div class="simce-hearts-row" id="simceHeartsRow" title="10 Misiones Heroicas">
+            ❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️
+          </div>
+          <div class="simce-counter-pill" id="simceCounterPill">
+            0 de 10 misiones listas
+          </div>
         </div>
       </div>
 
@@ -599,7 +738,7 @@
         <!-- Sidebar Izquierdo: Lista de Preguntas 1 a 10 -->
         <aside class="simce-sidebar">
           <div class="simce-sidebar-title">
-            <strong>Preguntas</strong>
+            <strong>Misiones Vengadores & Minecraft</strong>
             <span style="font-size:12px; color:var(--text-muted);">10 en total</span>
           </div>
 
@@ -610,7 +749,7 @@
           <div class="simce-legend">
             <div class="legend-item">
               <div class="legend-dot" style="background:#ECFDF5; border:1px solid #10B981;"></div>
-              <span>Respondida</span>
+              <span>Misión Lista</span>
             </div>
             <div class="legend-item">
               <div class="legend-dot" style="background:#F8FAFC; border:1px solid #CBD5E1;"></div>
@@ -618,7 +757,7 @@
             </div>
             <div class="legend-item">
               <div class="legend-dot" style="background:#EFF6FF; border:1px solid #3B82F6;"></div>
-              <span>Pregunta Actual</span>
+              <span>Misión Activa</span>
             </div>
           </div>
 
@@ -631,7 +770,7 @@
         <div class="simce-question-card">
           <div class="question-header-row">
             <span class="question-context-badge" id="simceContextBadge">Contexto</span>
-            <span class="question-number-badge" id="simceQuestionBadge">Pregunta 1 de 10</span>
+            <span class="question-number-badge" id="simceQuestionBadge">Misión 1 de 10</span>
           </div>
 
           <div class="question-text" id="simceQuestionText">
